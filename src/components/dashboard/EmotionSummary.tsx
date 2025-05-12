@@ -81,7 +81,7 @@ const EmotionSummary: React.FC<EmotionSummaryProps> = ({ stats }) => {
               </Grid>
               <Grid item xs={4}>
                 <Typography variant="caption" color="text.secondary">
-                  Confianza: {(stat.avgConfidence * 100).toFixed(1)}%
+                  Confianza: {(stat.avgConfidence).toFixed(1)}%
                 </Typography>
               </Grid>
             </Grid>

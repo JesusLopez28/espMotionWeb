@@ -14,7 +14,7 @@ export const exportToCSV = (records: EmotionRecord[]): void => {
     record.emotion,
     record.bpm.toString(),
     record.sweating.toString(),
-    (record.confidence * 100).toString() + '%',
+    (record.confidence).toString() + '%',
   ]);
 
   // Combinar encabezados y datos

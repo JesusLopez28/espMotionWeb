@@ -123,7 +123,7 @@ const EmotionDataTable: React.FC<EmotionDataTableProps> = ({ records }) => {
                   </TableCell>
                   <TableCell align="right">{row.bpm.toFixed(1)}</TableCell>
                   <TableCell align="right">{row.sweating.toFixed(3)}</TableCell>
-                  <TableCell align="right">{(row.confidence * 100).toFixed(1)}%</TableCell>
+                  <TableCell align="right">{(row.confidence).toFixed(1)}%</TableCell>
                 </TableRow>
               ))}
           </TableBody>

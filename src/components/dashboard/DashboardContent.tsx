@@ -101,7 +101,7 @@ const DashboardContent: React.FC = () => {
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title="Confianza Promedio"
-            value={`${(avgConfidence * 100).toFixed(1)}%`}
+            value={`${(avgConfidence).toFixed(1)}%`}
             icon={<PercentIcon />}
             color="#4BC0C0"
           />
