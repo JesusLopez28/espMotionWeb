@@ -10,12 +10,17 @@ import EmotionPieChart from '../charts/EmotionPieChart';
 import MetricsLineChart from '../charts/MetricsLineChart';
 import EmotionSummary from './EmotionSummary';
 import { useEmotionData } from '../../hooks/useEmotionData';
+import FirebaseDebug from './FirebaseDebug';
 
 const DashboardContent: React.FC = () => {
   const { records, stats, loading, error } = useEmotionData({
     realtimeUpdates: true,
     limitCount: 50,
   });
+
+  console.log('DashboardContent - Registros:', records);
+  console.log('DashboardContent - Estadísticas:', stats);
+  console.log('DashboardContent - Error:', error);
 
   if (loading) {
     return (
@@ -27,16 +32,27 @@ const DashboardContent: React.FC = () => {
 
   if (error) {
     return (
-      <Alert severity="error" sx={{ mt: 2 }}>
-        Error al cargar datos: {error.message}
-      </Alert>
+      <>
+        <Alert severity="error" sx={{ mt: 2 }}>
+          Error al cargar datos: {error.message}
+        </Alert>
+        <FirebaseDebug />
+      </>
     );
   }
 
   if (records.length === 0) {
     return (
-      <Box sx={{ my: 4, textAlign: 'center' }}>
-        <Typography variant="h5">No hay registros disponibles</Typography>
+      <Box sx={{ my: 4 }}>
+        <Typography variant="h5" align="center" gutterBottom>
+          No hay registros disponibles
+        </Typography>
+        <Typography variant="body1" align="center" sx={{ mt: 2, mb: 4, color: 'text.secondary' }}>
+          No se encontraron registros en la base de datos. Verifica la conexión con Firebase
+          y que la colección 'emotion_data' contenga documentos.
+        </Typography>
+
+        <FirebaseDebug />
       </Box>
     );
   }

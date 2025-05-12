@@ -1,26 +1,71 @@
-import { collection, getDocs, query, orderBy, limit, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, limit, Timestamp, getFirestore, getDoc, doc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import type { EmotionRecord, EmotionStats, Emotion } from '../types/emotion-data';
 
-const COLLECTION_NAME = 'emotions_data';
+// IMPORTANTE: Asegúrate de que este nombre coincide exactamente con tu colección en Firebase
+// Hay casos donde por error tipográfico no se accede a la colección correcta
+const COLLECTION_NAME = 'emotion_data';
 
 export const fetchEmotionRecords = async (): Promise<EmotionRecord[]> => {
   try {
+    console.log(`Intentando acceder a la colección: '${COLLECTION_NAME}'`);
+    
+    // Intentar primero con un método alternativo para verificar si hay datos
+    const firstQuery = query(collection(db, COLLECTION_NAME), limit(1));
+    const testSnapshot = await getDocs(firstQuery);
+    console.log(`Prueba inicial: ${testSnapshot.size} documentos encontrados`);
+    
+    if (testSnapshot.empty) {
+      console.warn(`⚠️ La colección '${COLLECTION_NAME}' parece estar vacía o no existe`);
+      
+      // Verificar si los IDs que mencionaste existen directamente
+      const testIds = ['/0iF9jK1f8CqsJVArm844', '/5oNSUsOwiuqeWdkJcG6L'];
+      for (const testId of testIds) {
+        try {
+          // Quitar la barra inicial si está presente
+          const cleanId = testId.startsWith('/') ? testId.substring(1) : testId;
+          const docRef = doc(db, COLLECTION_NAME, cleanId);
+          const docSnap = await getDoc(docRef);
+          console.log(`Buscando documento con ID '${cleanId}': ${docSnap.exists() ? 'Encontrado' : 'No existe'}`);
+          if (docSnap.exists()) {
+            console.log('Datos del documento:', docSnap.data());
+          }
+        } catch (e) {
+          console.error(`Error al buscar documento ${testId}:`, e);
+        }
+      }
+    }
+    
+    // Continuar con la consulta original
     const q = query(collection(db, COLLECTION_NAME), orderBy('date', 'desc'));
     const querySnapshot = await getDocs(q);
-
+    
+    console.log('Registros recuperados:', querySnapshot.docs.length);
+    
     return querySnapshot.docs.map(doc => {
       const data = doc.data();
-      // Convertir Timestamp de Firestore a string ISO si es necesario
-      const date = data.date instanceof Timestamp ? data.date.toDate().toISOString() : data.date;
+      console.log('Documento recuperado:', doc.id, data);
+      
+      // Manejar diferentes formatos de fecha (Timestamp o string)
+      let dateStr: string;
+      if (data.date instanceof Timestamp) {
+        dateStr = data.date.toDate().toISOString();
+      } else if (typeof data.date === 'string') {
+        // Si ya es string, usarlo directamente
+        dateStr = data.date;
+      } else {
+        // Fallback si no es ninguno de los anteriores
+        console.warn(`Formato de fecha desconocido para el documento ${doc.id}:`, data.date);
+        dateStr = new Date().toISOString(); // Fecha actual como fallback
+      }
 
       return {
         id: doc.id,
-        bpm: data.bpm,
-        confidence: data.confidence,
-        date: date,
+        bpm: Number(data.bpm),
+        confidence: Number(data.confidence),
+        date: dateStr,
         emotion: data.emotion,
-        sweating: data.sweating,
+        sweating: Number(data.sweating),
       };
     });
   } catch (error) {
@@ -33,19 +78,31 @@ export const fetchRecentEmotionRecords = async (count: number = 10): Promise<Emo
   try {
     const q = query(collection(db, COLLECTION_NAME), orderBy('date', 'desc'), limit(count));
     const querySnapshot = await getDocs(q);
-
+    
+    console.log('Registros recientes recuperados:', querySnapshot.docs.length);
+    
     return querySnapshot.docs.map(doc => {
       const data = doc.data();
-      // Convertir Timestamp de Firestore a string ISO si es necesario
-      const date = data.date instanceof Timestamp ? data.date.toDate().toISOString() : data.date;
+      // Manejar diferentes formatos de fecha (Timestamp o string)
+      let dateStr: string;
+      if (data.date instanceof Timestamp) {
+        dateStr = data.date.toDate().toISOString();
+      } else if (typeof data.date === 'string') {
+        // Si ya es string, usarlo directamente
+        dateStr = data.date;
+      } else {
+        // Fallback si no es ninguno de los anteriores
+        console.warn(`Formato de fecha desconocido para el documento ${doc.id}:`, data.date);
+        dateStr = new Date().toISOString(); // Fecha actual como fallback
+      }
 
       return {
         id: doc.id,
-        bpm: data.bpm,
-        confidence: data.confidence,
-        date: date,
+        bpm: Number(data.bpm),
+        confidence: Number(data.confidence),
+        date: dateStr,
         emotion: data.emotion,
-        sweating: data.sweating,
+        sweating: Number(data.sweating),
       };
     });
   } catch (error) {
