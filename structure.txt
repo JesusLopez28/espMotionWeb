@@ -1,0 +1,15 @@
+espMotionWeb/
+├── public/
+│   └── assets/
+├── src/
+│   ├── components/
+│   │   ├── charts/
+│   │   ├── dashboard/
+│   │   ├── layout/
+│   │   └── ui/
+│   ├── config/
+│   ├── hooks/
+│   ├── pages/
+│   ├── services/
+│   ├── types/
+│   └── utils/
