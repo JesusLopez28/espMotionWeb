@@ -34,11 +34,11 @@ interface EmotionDistributionChartProps {
 
 const EmotionDistributionChart: React.FC<EmotionDistributionChartProps> = ({ records }) => {
   const theme = useTheme();
-  
+
   // Procesar los datos para agruparlos por día y contar las emociones
   const { processedData, dateRange } = useMemo(() => {
     // Definir los colores dentro del useMemo para evitar recreaciones innecesarias
-    const emotionColors: Record<string, { line: string, background: string }> = {
+    const emotionColors: Record<string, { line: string; background: string }> = {
       happy: { line: 'rgba(255, 215, 0, 1)', background: 'rgba(255, 215, 0, 0.2)' },
       sad: { line: 'rgba(65, 105, 225, 1)', background: 'rgba(65, 105, 225, 0.2)' },
       fear: { line: 'rgba(153, 102, 255, 1)', background: 'rgba(153, 102, 255, 0.2)' },
@@ -67,7 +67,7 @@ const EmotionDistributionChart: React.FC<EmotionDistributionChartProps> = ({ rec
     // Establecer rango de fechas para el gráfico
     let startDate = new Date();
     let endDate = new Date();
-    
+
     if (sortedRecords.length > 0) {
       startDate = new Date(sortedRecords[0].date);
       endDate = new Date(sortedRecords[sortedRecords.length - 1].date);
@@ -102,7 +102,7 @@ const EmotionDistributionChart: React.FC<EmotionDistributionChartProps> = ({ rec
       neutral: 'Neutral',
       angry: 'Enojo',
       disgust: 'Disgusto',
-      surprise: 'Sorpresa'
+      surprise: 'Sorpresa',
     };
 
     // Convertir a arrays para Chart.js
@@ -124,9 +124,9 @@ const EmotionDistributionChart: React.FC<EmotionDistributionChartProps> = ({ rec
       cubicInterpolationMode: 'monotone' as const,
     }));
 
-    return { 
+    return {
       processedData: { labels, datasets },
-      dateRange: { startDate, endDate }
+      dateRange: { startDate, endDate },
     };
   }, [records]);
 
@@ -174,8 +174,8 @@ const EmotionDistributionChart: React.FC<EmotionDistributionChartProps> = ({ rec
           unit: 'day' as const,
           tooltipFormat: 'PP',
           displayFormats: {
-            day: 'dd/MM'
-          }
+            day: 'dd/MM',
+          },
         },
         title: {
           display: true,
@@ -220,8 +220,8 @@ const EmotionDistributionChart: React.FC<EmotionDistributionChartProps> = ({ rec
     layout: {
       padding: {
         top: 20,
-        bottom: 5
-      }
+        bottom: 5,
+      },
     },
     interaction: {
       mode: 'index' as const,
@@ -234,30 +234,29 @@ const EmotionDistributionChart: React.FC<EmotionDistributionChartProps> = ({ rec
       <Typography variant="h6" gutterBottom fontWeight={600}>
         Evolución de Emociones
       </Typography>
-      
+
       {records.length > 1 ? (
         <>
           <Typography variant="body2" color="text.secondary" mb={2}>
-            Mostrando datos desde {format(dateRange.startDate, 'PPP', { locale: es })} 
-            {' '}hasta{' '}
+            Mostrando datos desde {format(dateRange.startDate, 'PPP', { locale: es })} hasta{' '}
             {format(dateRange.endDate, 'PPP', { locale: es })}
           </Typography>
-          
+
           <Box sx={{ flex: 1, position: 'relative', height: '350px' }}>
-            <Line 
-              options={options} 
+            <Line
+              options={options}
               data={{
                 labels: processedData.labels,
                 datasets: processedData.datasets,
-              }} 
+              }}
             />
           </Box>
         </>
       ) : (
-        <Box 
-          sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
             justifyContent: 'center',
             flex: 1,
             borderRadius: 2,

@@ -50,12 +50,8 @@ const EmotionPieChart: React.FC<EmotionPieChartProps> = ({ stats }) => {
       datasets: [
         {
           data: stats.map(stat => stat.count),
-          backgroundColor: stats.map(
-            stat => emotionColors[stat.emotion] || '#888888'
-          ),
-          borderColor: stats.map(
-            stat => `${emotionColors[stat.emotion]}90` || '#77777790'
-          ),
+          backgroundColor: stats.map(stat => emotionColors[stat.emotion] || '#888888'),
+          borderColor: stats.map(stat => `${emotionColors[stat.emotion]}90` || '#77777790'),
           borderWidth: 1,
           hoverOffset: 15,
         },
@@ -95,14 +91,14 @@ const EmotionPieChart: React.FC<EmotionPieChartProps> = ({ stats }) => {
         borderWidth: 1,
         borderColor: theme.palette.divider,
         callbacks: {
-          label: function(tooltipItem) {
+          label: function (tooltipItem) {
             const dataset = tooltipItem.dataset;
             const total = dataset.data.reduce((acc: number, data: number) => acc + data, 0);
             const value = dataset.data[tooltipItem.dataIndex] as number;
             const percentage = ((value / total) * 100).toFixed(1);
             return `${tooltipItem.label}: ${value} (${percentage}%)`;
-          }
-        }
+          },
+        },
       },
     },
     cutout: '40%',
@@ -112,48 +108,52 @@ const EmotionPieChart: React.FC<EmotionPieChartProps> = ({ stats }) => {
         top: isMobile ? 5 : 10,
         bottom: isMobile ? 5 : 10,
         left: isMobile ? 5 : 10,
-        right: isMobile ? 5 : 10
-      }
-    }
+        right: isMobile ? 5 : 10,
+      },
+    },
   };
 
   return (
-    <Box sx={{ 
-      height: '100%', 
-      width: '100%', 
-      p: 1, 
-      display: 'flex', 
-      flexDirection: 'column' 
-    }}>
-      <Typography 
-        variant="h6" 
-        sx={{ 
-          fontWeight: 600, 
+    <Box
+      sx={{
+        height: '100%',
+        width: '100%',
+        p: 1,
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <Typography
+        variant="h6"
+        sx={{
+          fontWeight: 600,
           mb: 2,
           fontSize: isMobile ? '1rem' : '1.25rem',
-          textAlign: isMobile ? 'center' : 'left'
+          textAlign: isMobile ? 'center' : 'left',
         }}
       >
         Distribución de Emociones
       </Typography>
-      
+
       {stats.length > 0 ? (
-        <Box sx={{ 
-          position: 'relative', 
-          height: '100%', 
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
+        <Box
+          sx={{
+            position: 'relative',
+            height: '100%',
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <Pie data={chartData} options={options} />
         </Box>
       ) : (
-        <Box 
-          sx={{ 
-            height: '100%', 
-            display: 'flex', 
-            alignItems: 'center', 
+        <Box
+          sx={{
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
             justifyContent: 'center',
             borderRadius: 2,
             border: `1px dashed ${theme.palette.divider}`,

@@ -44,7 +44,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
   const theme = useTheme();
   const location = useLocation();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  
+
   // Función para verificar la ruta activa
   const isActive = (path: string) => location.pathname === path;
 
@@ -62,8 +62,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
         width: drawerWidth,
         flexShrink: 0,
         display: { xs: 'block', md: 'block' },
-        [`& .MuiDrawer-paper`]: { 
-          width: drawerWidth, 
+        [`& .MuiDrawer-paper`]: {
+          width: drawerWidth,
           boxSizing: 'border-box',
           border: 'none',
           backgroundColor: 'rgba(255, 255, 255, 0.95)',
@@ -74,54 +74,63 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
       }}
     >
       <Toolbar />
-      <Box sx={{ 
-        overflow: 'auto',
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        p: 2,
-        pt: 4
-      }}>
+      <Box
+        sx={{
+          overflow: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+          p: 2,
+          pt: 4,
+        }}
+      >
         <Box sx={{ mb: 3, px: 1 }}>
-          <Typography variant="overline" color="text.secondary" sx={{ fontWeight: 600, letterSpacing: 1.2 }}>
+          <Typography
+            variant="overline"
+            color="text.secondary"
+            sx={{ fontWeight: 600, letterSpacing: 1.2 }}
+          >
             ANÁLISIS
           </Typography>
         </Box>
-        
-        <List sx={{ 
-          '& .MuiListItemButton-root': {
-            mb: 1.5, 
-            borderRadius: 2,
-            transition: 'all 0.3s ease',
-            overflow: 'hidden',
-            position: 'relative',
-            '&::before': {
-              content: '""',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              background: 'linear-gradient(90deg, rgba(82, 113, 255, 0) 0%, rgba(82, 113, 255, 0.1) 50%, rgba(82, 113, 255, 0) 100%)',
-              transform: 'translateX(-100%)',
-              transition: 'transform 0.6s ease',
-            },
-            '&:hover': {
-              backgroundColor: 'rgba(82, 113, 255, 0.08)',
-              transform: 'translateY(-2px)',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.05)',
-              animation: `${glowAnimation} 2s infinite ease-in-out`,
+
+        <List
+          sx={{
+            '& .MuiListItemButton-root': {
+              mb: 1.5,
+              borderRadius: 2,
+              transition: 'all 0.3s ease',
+              overflow: 'hidden',
+              position: 'relative',
               '&::before': {
-                transform: 'translateX(100%)',
-              }
-            }
-          },
-          '& .MuiListItemIcon-root': {
-            minWidth: 40
-          }
-        }}>
-          <ListItemButton 
-            component={Link} 
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                background:
+                  'linear-gradient(90deg, rgba(82, 113, 255, 0) 0%, rgba(82, 113, 255, 0.1) 50%, rgba(82, 113, 255, 0) 100%)',
+                transform: 'translateX(-100%)',
+                transition: 'transform 0.6s ease',
+              },
+              '&:hover': {
+                backgroundColor: 'rgba(82, 113, 255, 0.08)',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.05)',
+                animation: `${glowAnimation} 2s infinite ease-in-out`,
+                '&::before': {
+                  transform: 'translateX(100%)',
+                },
+              },
+            },
+            '& .MuiListItemIcon-root': {
+              minWidth: 40,
+            },
+          }}
+        >
+          <ListItemButton
+            component={Link}
             to="/"
             onClick={handleItemClick}
             sx={{
@@ -136,8 +145,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
                 transition: 'transform 0.2s ease',
               },
               '&:hover .MuiListItemText-primary, &:hover .MuiListItemIcon-root': {
-                transform: 'translateX(4px)'
-              }
+                transform: 'translateX(4px)',
+              },
             }}
           >
             <ListItemIcon>
@@ -145,25 +154,29 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
             </ListItemIcon>
             <ListItemText primary="Dashboard" />
           </ListItemButton>
-          
-          <ListItemButton 
-            component={Link} 
+
+          <ListItemButton
+            component={Link}
             to="/historical"
             onClick={handleItemClick}
             sx={{
               backgroundColor: isActive('/historical') ? 'rgba(82, 113, 255, 0.1)' : 'transparent',
               '& .MuiListItemText-primary': {
-                color: isActive('/historical') ? theme.palette.primary.main : theme.palette.text.primary,
+                color: isActive('/historical')
+                  ? theme.palette.primary.main
+                  : theme.palette.text.primary,
                 fontWeight: isActive('/historical') ? 600 : 400,
                 transition: 'transform 0.2s ease',
               },
               '& .MuiListItemIcon-root': {
-                color: isActive('/historical') ? theme.palette.primary.main : theme.palette.text.secondary,
+                color: isActive('/historical')
+                  ? theme.palette.primary.main
+                  : theme.palette.text.secondary,
                 transition: 'transform 0.2s ease',
               },
               '&:hover .MuiListItemText-primary, &:hover .MuiListItemIcon-root': {
-                transform: 'translateX(4px)'
-              }
+                transform: 'translateX(4px)',
+              },
             }}
           >
             <ListItemIcon>
@@ -171,25 +184,29 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
             </ListItemIcon>
             <ListItemText primary="Histórico" />
           </ListItemButton>
-          
-          <ListItemButton 
-            component={Link} 
+
+          <ListItemButton
+            component={Link}
             to="/records"
             onClick={handleItemClick}
             sx={{
               backgroundColor: isActive('/records') ? 'rgba(82, 113, 255, 0.1)' : 'transparent',
               '& .MuiListItemText-primary': {
-                color: isActive('/records') ? theme.palette.primary.main : theme.palette.text.primary,
+                color: isActive('/records')
+                  ? theme.palette.primary.main
+                  : theme.palette.text.primary,
                 fontWeight: isActive('/records') ? 600 : 400,
                 transition: 'transform 0.2s ease',
               },
               '& .MuiListItemIcon-root': {
-                color: isActive('/records') ? theme.palette.primary.main : theme.palette.text.secondary,
+                color: isActive('/records')
+                  ? theme.palette.primary.main
+                  : theme.palette.text.secondary,
                 transition: 'transform 0.2s ease',
               },
               '&:hover .MuiListItemText-primary, &:hover .MuiListItemIcon-root': {
-                transform: 'translateX(4px)'
-              }
+                transform: 'translateX(4px)',
+              },
             }}
           >
             <ListItemIcon>
@@ -198,63 +215,74 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
             <ListItemText primary="Registros" />
           </ListItemButton>
         </List>
-        
+
         <Box sx={{ mt: 3, mb: 1.5, px: 1 }}>
-          <Typography variant="overline" color="text.secondary" sx={{ fontWeight: 600, letterSpacing: 1.2 }}>
+          <Typography
+            variant="overline"
+            color="text.secondary"
+            sx={{ fontWeight: 600, letterSpacing: 1.2 }}
+          >
             INTERPRETACIÓN
           </Typography>
         </Box>
-        
-        <List sx={{ 
-          '& .MuiListItemButton-root': {
-            mb: 1.5, 
-            borderRadius: 2,
-            transition: 'all 0.3s ease',
-            overflow: 'hidden',
-            position: 'relative',
-            '&::before': {
-              content: '""',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              background: 'linear-gradient(90deg, rgba(82, 113, 255, 0) 0%, rgba(82, 113, 255, 0.1) 50%, rgba(82, 113, 255, 0) 100%)',
-              transform: 'translateX(-100%)',
-              transition: 'transform 0.6s ease',
-            },
-            '&:hover': {
-              backgroundColor: 'rgba(82, 113, 255, 0.08)',
-              transform: 'translateY(-2px)',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.05)',
-              animation: `${glowAnimation} 2s infinite ease-in-out`,
+
+        <List
+          sx={{
+            '& .MuiListItemButton-root': {
+              mb: 1.5,
+              borderRadius: 2,
+              transition: 'all 0.3s ease',
+              overflow: 'hidden',
+              position: 'relative',
               '&::before': {
-                transform: 'translateX(100%)',
-              }
-            }
-          },
-          '& .MuiListItemIcon-root': {
-            minWidth: 40
-          }
-        }}>
-          <ListItemButton 
-            component={Link} 
+                content: '""',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                background:
+                  'linear-gradient(90deg, rgba(82, 113, 255, 0) 0%, rgba(82, 113, 255, 0.1) 50%, rgba(82, 113, 255, 0) 100%)',
+                transform: 'translateX(-100%)',
+                transition: 'transform 0.6s ease',
+              },
+              '&:hover': {
+                backgroundColor: 'rgba(82, 113, 255, 0.08)',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.05)',
+                animation: `${glowAnimation} 2s infinite ease-in-out`,
+                '&::before': {
+                  transform: 'translateX(100%)',
+                },
+              },
+            },
+            '& .MuiListItemIcon-root': {
+              minWidth: 40,
+            },
+          }}
+        >
+          <ListItemButton
+            component={Link}
             to="/analytics"
             onClick={handleItemClick}
             sx={{
               backgroundColor: isActive('/analytics') ? 'rgba(82, 113, 255, 0.1)' : 'transparent',
               '& .MuiListItemText-primary': {
-                color: isActive('/analytics') ? theme.palette.primary.main : theme.palette.text.primary,
+                color: isActive('/analytics')
+                  ? theme.palette.primary.main
+                  : theme.palette.text.primary,
                 fontWeight: isActive('/analytics') ? 600 : 400,
                 transition: 'transform 0.2s ease',
               },
               '& .MuiListItemIcon-root': {
-                color: isActive('/analytics') ? theme.palette.primary.main : theme.palette.text.secondary,
+                color: isActive('/analytics')
+                  ? theme.palette.primary.main
+                  : theme.palette.text.secondary,
                 transition: 'transform 0.2s ease',
               },
               '&:hover .MuiListItemText-primary, &:hover .MuiListItemIcon-root': {
-                transform: 'translateX(4px)'
-              }
+                transform: 'translateX(4px)',
+              },
             }}
           >
             <ListItemIcon>
@@ -262,25 +290,29 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
             </ListItemIcon>
             <ListItemText primary="Análisis" />
           </ListItemButton>
-          
-          <ListItemButton 
-            component={Link} 
+
+          <ListItemButton
+            component={Link}
             to="/patterns"
             onClick={handleItemClick}
             sx={{
               backgroundColor: isActive('/patterns') ? 'rgba(82, 113, 255, 0.1)' : 'transparent',
               '& .MuiListItemText-primary': {
-                color: isActive('/patterns') ? theme.palette.primary.main : theme.palette.text.primary,
+                color: isActive('/patterns')
+                  ? theme.palette.primary.main
+                  : theme.palette.text.primary,
                 fontWeight: isActive('/patterns') ? 600 : 400,
                 transition: 'transform 0.2s ease',
               },
               '& .MuiListItemIcon-root': {
-                color: isActive('/patterns') ? theme.palette.primary.main : theme.palette.text.secondary,
+                color: isActive('/patterns')
+                  ? theme.palette.primary.main
+                  : theme.palette.text.secondary,
                 transition: 'transform 0.2s ease',
               },
               '&:hover .MuiListItemText-primary, &:hover .MuiListItemIcon-root': {
-                transform: 'translateX(4px)'
-              }
+                transform: 'translateX(4px)',
+              },
             }}
           >
             <ListItemIcon>
@@ -289,30 +321,30 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
             <ListItemText primary="Patrones" />
           </ListItemButton>
         </List>
-        
+
         {!isMobile && (
-          <Box 
-            sx={{ 
-              mt: 'auto', 
-              p: 2, 
-              borderRadius: 2, 
-              backgroundColor: 'rgba(82, 113, 255, 0.05)', 
-              display: 'flex', 
+          <Box
+            sx={{
+              mt: 'auto',
+              p: 2,
+              borderRadius: 2,
+              backgroundColor: 'rgba(82, 113, 255, 0.05)',
+              display: 'flex',
               alignItems: 'center',
               transition: 'all 0.3s ease',
               '&:hover': {
                 backgroundColor: 'rgba(82, 113, 255, 0.1)',
                 transform: 'translateY(-2px)',
                 boxShadow: '0 4px 10px rgba(0, 0, 0, 0.05)',
-              }
+              },
             }}
           >
-            <FavoriteBorderIcon 
-              sx={{ 
-                color: theme.palette.secondary.main, 
-                mr: 1, 
-                animation: `${pulseAnimation} 1.5s infinite ease-in-out` 
-              }} 
+            <FavoriteBorderIcon
+              sx={{
+                color: theme.palette.secondary.main,
+                mr: 1,
+                animation: `${pulseAnimation} 1.5s infinite ease-in-out`,
+              }}
             />
             <Typography variant="body2" color="text.secondary">
               Analizando emociones...

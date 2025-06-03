@@ -75,7 +75,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background-color: #f8f9fd;
-  background-image: 
+  background-image:
     radial-gradient(circle at 25% 15%, rgba(82, 113, 255, 0.05) 0%, transparent 25%),
     radial-gradient(circle at 75% 85%, rgba(255, 87, 87, 0.05) 0%, transparent 25%);
 }
@@ -94,7 +94,9 @@ button {
   font-family: inherit;
   background-color: #f1f3fa;
   cursor: pointer;
-  transition: background-color 0.25s, transform 0.2s;
+  transition:
+    background-color 0.25s,
+    transform 0.2s;
 }
 
 button:hover {
@@ -109,29 +111,51 @@ button:focus-visible {
 }
 
 /* Clases de utilidad para colores de emoción */
-.emotion-happy { background-color: #FFD700 !important; }
-.emotion-sad { background-color: #4169E1 !important; }
-.emotion-fear { background-color: #9370DB !important; }
-.emotion-neutral { background-color: #A9A9A9 !important; }
-.emotion-angry { background-color: #FF6347 !important; }
-.emotion-disgust { background-color: #20B2AA !important; }
-.emotion-surprise { background-color: #FF8C00 !important; }
+.emotion-happy {
+  background-color: #ffd700 !important;
+}
+.emotion-sad {
+  background-color: #4169e1 !important;
+}
+.emotion-fear {
+  background-color: #9370db !important;
+}
+.emotion-neutral {
+  background-color: #a9a9a9 !important;
+}
+.emotion-angry {
+  background-color: #ff6347 !important;
+}
+.emotion-disgust {
+  background-color: #20b2aa !important;
+}
+.emotion-surprise {
+  background-color: #ff8c00 !important;
+}
 
 /* Efectos de transición generales */
 .card-transition {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .card-transition:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
 /* Animación de pulso para BPM */
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .pulse-animation {
@@ -144,7 +168,9 @@ button:focus-visible {
   padding: 1rem;
   background-color: white;
   box-shadow: 0 4px 20px rgba(32, 40, 86, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .chart-container:hover {
@@ -158,29 +184,29 @@ button:focus-visible {
     padding: 0.75rem;
     border-radius: 10px;
   }
-  
+
   .chart-container:hover {
     transform: translateY(-3px);
   }
-  
+
   h1 {
     font-size: 2em;
   }
-  
+
   button {
     padding: 0.5em 1em;
   }
-  
+
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
-  
+
   /* Ajuste de tamaños de texto responsivos */
   .text-responsive {
     font-size: 0.9rem;
   }
-  
+
   /* Más espaciado para elementos touch */
   .touch-target {
     min-height: 44px;

@@ -35,14 +35,14 @@ interface MetricsLineChartProps {
   compactMode?: boolean;
 }
 
-const MetricsLineChart: React.FC<MetricsLineChartProps> = ({ 
-  records, 
-  metric, 
+const MetricsLineChart: React.FC<MetricsLineChartProps> = ({
+  records,
+  metric,
   title,
-  compactMode = false
+  compactMode = false,
 }) => {
   const theme = useTheme();
-  
+
   const getMetricColor = () => {
     switch (metric) {
       case 'bpm':
@@ -199,8 +199,8 @@ const MetricsLineChart: React.FC<MetricsLineChartProps> = ({
           tooltipFormat: 'PPp',
           displayFormats: {
             hour: 'HH:mm',
-            day: 'dd/MM'
-          }
+            day: 'dd/MM',
+          },
         },
         title: {
           display: !compactMode,
@@ -222,7 +222,7 @@ const MetricsLineChart: React.FC<MetricsLineChartProps> = ({
           maxTicksLimit: compactMode ? 5 : 10,
           font: {
             size: compactMode ? 10 : 12,
-          }
+          },
         },
         border: {
           display: false,
@@ -271,24 +271,27 @@ const MetricsLineChart: React.FC<MetricsLineChartProps> = ({
 
   return (
     <Box sx={{ height: '100%', width: '100%', p: 1 }}>
-      <Typography variant="h6" sx={{ 
-        fontWeight: 600, 
-        mb: 2,
-        fontSize: compactMode ? '1rem' : '1.25rem',
-        textAlign: compactMode ? 'center' : 'left' 
-      }}>
+      <Typography
+        variant="h6"
+        sx={{
+          fontWeight: 600,
+          mb: 2,
+          fontSize: compactMode ? '1rem' : '1.25rem',
+          textAlign: compactMode ? 'center' : 'left',
+        }}
+      >
         {title}
       </Typography>
-      
+
       <Box sx={{ position: 'relative', height: compactMode ? '250px' : '350px' }}>
         {sortedRecords.length > 0 ? (
           <Line data={chartData} options={options} />
         ) : (
-          <Box 
-            sx={{ 
-              height: '100%', 
-              display: 'flex', 
-              alignItems: 'center', 
+          <Box
+            sx={{
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
               justifyContent: 'center',
               borderRadius: 2,
               border: `1px dashed ${theme.palette.divider}`,

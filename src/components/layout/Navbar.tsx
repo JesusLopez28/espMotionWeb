@@ -27,14 +27,14 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick, showMenuIcon = false }) =>
   const theme = useTheme();
 
   return (
-    <AppBar 
-      position="fixed" 
-      sx={{ 
+    <AppBar
+      position="fixed"
+      sx={{
         zIndex: theme => theme.zIndex.drawer + 1,
         backgroundColor: 'rgba(255, 255, 255, 0.9)',
         backdropFilter: 'blur(10px)',
         boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
-        color: theme.palette.primary.main
+        color: theme.palette.primary.main,
       }}
       elevation={0}
     >
@@ -50,12 +50,12 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick, showMenuIcon = false }) =>
             <MenuIcon />
           </IconButton>
         )}
-        
-        <Box 
-          component={Link} 
+
+        <Box
+          component={Link}
           to="/"
-          sx={{ 
-            display: 'flex', 
+          sx={{
+            display: 'flex',
             alignItems: 'center',
             background: `linear-gradient(90deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
             padding: { xs: '4px 8px', sm: '6px 12px', md: '8px 16px' },
@@ -70,8 +70,8 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick, showMenuIcon = false }) =>
               transform: 'translateY(-2px)',
               boxShadow: '0 6px 12px rgba(0, 0, 0, 0.15)',
               '&::after': {
-          opacity: 1,
-              }
+                opacity: 1,
+              },
             },
             '&::after': {
               content: '""',
@@ -86,20 +86,22 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick, showMenuIcon = false }) =>
               animation: `${shimmerAnimation} 1.5s infinite linear`,
               opacity: 0,
               transition: 'opacity 0.3s ease',
-            }
+            },
           }}
         >
-          <FavoriteBorderIcon sx={{ 
-            color: 'white', 
-            mr: { xs: 0.5, sm: 1 }, 
-            fontSize: { xs: 20, sm: 24, md: 28 },
-            animation: `${pulseAnimation} 1.5s infinite ease-in-out`,
-            zIndex: 1
-          }} />
-          <Typography 
-            variant="h6" 
-            sx={{ 
-              fontWeight: 700, 
+          <FavoriteBorderIcon
+            sx={{
+              color: 'white',
+              mr: { xs: 0.5, sm: 1 },
+              fontSize: { xs: 20, sm: 24, md: 28 },
+              animation: `${pulseAnimation} 1.5s infinite ease-in-out`,
+              zIndex: 1,
+            }}
+          />
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 700,
               fontSize: { xs: '0.80rem', sm: '1.1rem', md: '1.2rem' }, // más pequeño en xs
               color: 'white',
               textDecoration: 'none',
@@ -108,46 +110,46 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick, showMenuIcon = false }) =>
               zIndex: 1,
               position: 'relative',
               '&::after': {
-          content: '""',
-          position: 'absolute',
-          width: '0%',
-          height: '2px',
-          bottom: '-2px',
-          left: '0',
-          backgroundColor: 'white',
-          transition: 'width 0.3s ease',
+                content: '""',
+                position: 'absolute',
+                width: '0%',
+                height: '2px',
+                bottom: '-2px',
+                left: '0',
+                backgroundColor: 'white',
+                transition: 'width 0.3s ease',
               },
               '&:hover::after': {
-          width: '100%',
-              }
+                width: '100%',
+              },
             }}
           >
             ESP Motion
           </Typography>
         </Box>
 
-        <Typography 
-          variant="subtitle1" 
-          component="div" 
-          sx={{ 
+        <Typography
+          variant="subtitle1"
+          component="div"
+          sx={{
             flexGrow: 1,
             color: theme.palette.text.primary,
-            fontWeight: 500
+            fontWeight: 500,
           }}
         >
           Detector de Emociones
         </Typography>
 
-        <Chip 
-          label="IoT Analytics" 
-          variant="outlined" 
-          size="small" 
-          sx={{ 
+        <Chip
+          label="IoT Analytics"
+          variant="outlined"
+          size="small"
+          sx={{
             borderColor: theme.palette.primary.main,
             color: theme.palette.primary.main,
             fontWeight: 500,
-            mr: 2
-          }} 
+            mr: 2,
+          }}
         />
       </Toolbar>
     </AppBar>

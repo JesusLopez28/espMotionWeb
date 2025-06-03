@@ -10,17 +10,17 @@ interface StatCardProps {
   animation?: string;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ 
-  title, 
-  value, 
-  icon, 
+const StatCard: React.FC<StatCardProps> = ({
+  title,
+  value,
+  icon,
   color = '#5271ff',
   subtitle,
-  animation
+  animation,
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  
+
   return (
     <Paper
       sx={{
@@ -36,13 +36,13 @@ const StatCard: React.FC<StatCardProps> = ({
         '&:hover': {
           transform: 'translateY(-5px)',
           boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
-        }
+        },
       }}
       elevation={0}
     >
       {/* Decoración de fondo */}
-      <Box 
-        sx={{ 
+      <Box
+        sx={{
           position: 'absolute',
           top: 0,
           right: 0,
@@ -54,9 +54,9 @@ const StatCard: React.FC<StatCardProps> = ({
           transform: 'translate(30%, -30%)',
         }}
       />
-      
-      <Box 
-        sx={{ 
+
+      <Box
+        sx={{
           position: 'absolute',
           bottom: 0,
           left: 0,
@@ -69,14 +69,16 @@ const StatCard: React.FC<StatCardProps> = ({
         }}
       />
 
-      <Box sx={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'flex-start', 
-        mb: isMobile ? 2 : 3 
-      }}>
-        <Typography 
-          variant="subtitle1" 
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          mb: isMobile ? 2 : 3,
+        }}
+      >
+        <Typography
+          variant="subtitle1"
           sx={{
             color: theme.palette.text.secondary,
             fontSize: isMobile ? '0.75rem' : '0.875rem',
@@ -85,8 +87,8 @@ const StatCard: React.FC<StatCardProps> = ({
         >
           {title}
         </Typography>
-        <Box 
-          sx={{ 
+        <Box
+          sx={{
             color: 'white',
             backgroundColor: color,
             borderRadius: '10px',
@@ -102,28 +104,28 @@ const StatCard: React.FC<StatCardProps> = ({
           {icon}
         </Box>
       </Box>
-      
+
       <Box sx={{ mt: 'auto' }}>
-        <Typography 
-          variant="h4" 
+        <Typography
+          variant="h4"
           component="div"
-          sx={{ 
-            fontWeight: 700, 
+          sx={{
+            fontWeight: 700,
             mb: 0.5,
             fontSize: isMobile ? '1.25rem' : '2rem',
-            color: theme.palette.text.primary
+            color: theme.palette.text.primary,
           }}
         >
           {value}
         </Typography>
-        
+
         {subtitle && (
-          <Typography 
-            variant="body2" 
+          <Typography
+            variant="body2"
             component="div"
-            sx={{ 
+            sx={{
               color: theme.palette.text.secondary,
-              fontSize: isMobile ? '0.7rem' : '0.75rem'
+              fontSize: isMobile ? '0.7rem' : '0.75rem',
             }}
           >
             {subtitle}

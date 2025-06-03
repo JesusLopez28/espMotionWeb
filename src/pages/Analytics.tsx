@@ -146,7 +146,7 @@ const Analytics: React.FC = () => {
                   {metric.avgSweating.toFixed(3)}.
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Nivel de confianza promedio: {(metric.avgConfidence).toFixed(1)}%
+                  Nivel de confianza promedio: {metric.avgConfidence.toFixed(1)}%
                 </Typography>
               </CardContent>
             </Card>

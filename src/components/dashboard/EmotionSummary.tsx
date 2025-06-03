@@ -1,17 +1,17 @@
 import React from 'react';
-import { 
-  Paper, 
-  Typography, 
-  Box, 
-  List, 
-  ListItem, 
-  ListItemIcon, 
-  ListItemText, 
-  useTheme, 
+import {
+  Paper,
+  Typography,
+  Box,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  useTheme,
   useMediaQuery,
   LinearProgress,
   Chip,
-  Divider
+  Divider,
 } from '@mui/material';
 import type { EmotionStats } from '../../types/emotion-data';
 
@@ -74,13 +74,13 @@ const EmotionSummary: React.FC<EmotionSummaryProps> = ({ stats }) => {
       }}
       elevation={0}
     >
-      <Typography 
-        variant="h6" 
-        sx={{ 
-          fontWeight: 600, 
+      <Typography
+        variant="h6"
+        sx={{
+          fontWeight: 600,
           mb: 2,
           fontSize: isMobile ? '1rem' : '1.25rem',
-          textAlign: isMobile ? 'center' : 'left'
+          textAlign: isMobile ? 'center' : 'left',
         }}
       >
         Resumen de Emociones
@@ -91,17 +91,17 @@ const EmotionSummary: React.FC<EmotionSummaryProps> = ({ stats }) => {
           <List disablePadding sx={{ '& .MuiListItem-root': { px: 0, py: 1 } }}>
             {sortedStats.map((stat, index) => {
               const percentage = totalCount > 0 ? (stat.count / totalCount) * 100 : 0;
-              
+
               return (
                 <React.Fragment key={stat.emotion}>
                   <ListItem alignItems="flex-start">
                     <ListItemIcon sx={{ minWidth: isMobile ? 36 : 44 }}>
-                      <Box 
-                        sx={{ 
-                          fontSize: isMobile ? '1.5rem' : '2rem', 
+                      <Box
+                        sx={{
+                          fontSize: isMobile ? '1.5rem' : '2rem',
                           lineHeight: 1,
                           textAlign: 'center',
-                          width: '100%'
+                          width: '100%',
                         }}
                       >
                         {emotionIcons[stat.emotion] || '😶'}
@@ -109,13 +109,20 @@ const EmotionSummary: React.FC<EmotionSummaryProps> = ({ stats }) => {
                     </ListItemIcon>
                     <ListItemText
                       primary={
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                          <Typography 
-                            variant="subtitle1" 
-                            sx={{ 
-                              fontWeight: 600, 
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            mb: 0.5,
+                          }}
+                        >
+                          <Typography
+                            variant="subtitle1"
+                            sx={{
+                              fontWeight: 600,
                               fontSize: isMobile ? '0.875rem' : '1rem',
-                              textTransform: 'capitalize' 
+                              textTransform: 'capitalize',
                             }}
                           >
                             {emotionLabels[stat.emotion] || stat.emotion}
@@ -129,11 +136,14 @@ const EmotionSummary: React.FC<EmotionSummaryProps> = ({ stats }) => {
                                 backgroundColor: `${emotionColors[stat.emotion]}20` || '#88888820',
                                 color: emotionColors[stat.emotion] || '#888888',
                                 height: 24,
-                                minWidth: 45
+                                minWidth: 45,
                               }}
                             />
                             {!isMobile && (
-                              <Typography variant="body2" sx={{ fontWeight: 500, width: 36, textAlign: 'right' }}>
+                              <Typography
+                                variant="body2"
+                                sx={{ fontWeight: 500, width: 36, textAlign: 'right' }}
+                              >
                                 {stat.count}
                               </Typography>
                             )}
@@ -152,12 +162,18 @@ const EmotionSummary: React.FC<EmotionSummaryProps> = ({ stats }) => {
                               backgroundColor: `${emotionColors[stat.emotion]}10` || '#88888810',
                               '& .MuiLinearProgress-bar': {
                                 backgroundColor: emotionColors[stat.emotion] || '#888888',
-                              }
+                              },
                             }}
                           />
-                          
+
                           {!isMobile && (
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                              }}
+                            >
                               <Typography variant="caption" color="text.secondary">
                                 BPM: {stat.avgBpm.toFixed(1)}
                               </Typography>
@@ -165,18 +181,24 @@ const EmotionSummary: React.FC<EmotionSummaryProps> = ({ stats }) => {
                                 Sudoración: {stat.avgSweating.toFixed(3)}
                               </Typography>
                               <Typography variant="caption" color="text.secondary">
-                                Confianza: {(stat.avgConfidence).toFixed(1)}%
+                                Confianza: {stat.avgConfidence.toFixed(1)}%
                               </Typography>
                             </Box>
                           )}
-                          
+
                           {isMobile && (
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                              }}
+                            >
                               <Typography variant="caption" color="text.secondary">
                                 BPM: {stat.avgBpm.toFixed(1)}
                               </Typography>
                               <Typography variant="caption" color="text.secondary">
-                                Confianza: {(stat.avgConfidence).toFixed(1)}%
+                                Confianza: {stat.avgConfidence.toFixed(1)}%
                               </Typography>
                             </Box>
                           )}
@@ -192,11 +214,11 @@ const EmotionSummary: React.FC<EmotionSummaryProps> = ({ stats }) => {
           </List>
         </Box>
       ) : (
-        <Box 
-          sx={{ 
+        <Box
+          sx={{
             flex: 1,
-            display: 'flex', 
-            alignItems: 'center', 
+            display: 'flex',
+            alignItems: 'center',
             justifyContent: 'center',
             borderRadius: 2,
             border: `1px dashed ${theme.palette.divider}`,
