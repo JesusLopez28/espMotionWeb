@@ -7,10 +7,28 @@ import {
   limit,
   Timestamp,
   getDocs,
+  enableIndexedDbPersistence,
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import type { EmotionRecord, EmotionStats } from '../types/emotion-data';
 import { calculateEmotionStats } from '../services/emotion-service';
+import { useOnlineStatus } from './useOnlineStatus';
+
+// Habilitar la persistencia para funcionamiento offline
+// Esta función debe llamarse solo una vez al inicio de la aplicación
+try {
+  enableIndexedDbPersistence(db)
+    .then(() => console.log('Persistencia de Firestore habilitada'))
+    .catch((err) => {
+      if (err.code === 'failed-precondition') {
+        console.warn('La persistencia falló: múltiples pestañas abiertas');
+      } else if (err.code === 'unimplemented') {
+        console.warn('El navegador actual no soporta persistencia');
+      }
+    });
+} catch (error) {
+  console.error('Error al configurar persistencia:', error);
+}
 
 interface UseEmotionDataProps {
   realtimeUpdates?: boolean;
@@ -36,10 +54,17 @@ export const useEmotionData = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [testedCollections, setTestedCollections] = useState<string[]>([]);
+  const { isOnline } = useOnlineStatus();
+  const [offlineMode, setOfflineMode] = useState(false);
 
   useEffect(() => {
     setLoading(true);
     console.log(`Iniciando carga de datos de emociones desde '${collectionName}'...`);
+    console.log(`Estado de conexión: ${isOnline ? 'En línea' : 'Sin conexión'}`);
+
+    if (!isOnline) {
+      setOfflineMode(true);
+    }
 
     const fetchData = async () => {
       // Si ya probamos todas las alternativas y no hay datos, mostrar error
@@ -96,6 +121,11 @@ export const useEmotionData = ({
             q,
             snapshot => {
               console.log(`Documentos recibidos: ${snapshot.docs.length}`);
+              setOfflineMode(snapshot.metadata.fromCache);
+              
+              if (snapshot.metadata.fromCache) {
+                console.log('Datos obtenidos desde la caché local (modo offline)');
+              }
 
               const newRecords: EmotionRecord[] = snapshot.docs.map(doc => {
                 const data = doc.data();
@@ -133,13 +163,17 @@ export const useEmotionData = ({
             err => {
               console.error(`Error en listener de Firestore para '${currentCollection}':`, err);
 
-              // Si falla y hay más colecciones para probar, probar la siguiente
-              if (testedCollections.length < COLLECTION_ALTERNATIVES.length - 1) {
+              // Si el error es por falta de conexión, mostrar mensaje específico
+              if (!isOnline || err.code === 'failed-precondition' || err.code === 'unavailable') {
+                setError(new Error('No hay conexión a Internet. Usando datos en caché si están disponibles.'));
+                setOfflineMode(true);
+              } else if (testedCollections.length < COLLECTION_ALTERNATIVES.length - 1) {
                 setTestedCollections([...testedCollections, currentCollection]);
               } else {
                 setError(err as Error);
-                setLoading(false);
               }
+              
+              setLoading(false);
             }
           );
 
@@ -185,18 +219,22 @@ export const useEmotionData = ({
       } catch (err) {
         console.error(`Error al consultar '${currentCollection}':`, err);
 
-        // Si falla y hay más colecciones para probar, probar la siguiente
-        if (testedCollections.length < COLLECTION_ALTERNATIVES.length - 1) {
+        // Si el error es por falta de conexión, mostrar mensaje específico
+        if (!isOnline) {
+          setError(new Error('No hay conexión a Internet. Usando datos en caché si están disponibles.'));
+          setOfflineMode(true);
+        } else if (testedCollections.length < COLLECTION_ALTERNATIVES.length - 1) {
           setTestedCollections([...testedCollections, currentCollection]);
         } else {
           setError(err as Error);
-          setLoading(false);
         }
+        
+        setLoading(false);
       }
     };
 
     fetchData();
-  }, [realtimeUpdates, limitCount, daysBack, collectionName, testedCollections]);
+  }, [realtimeUpdates, limitCount, daysBack, collectionName, testedCollections, isOnline]);
 
-  return { records, stats, loading, error };
+  return { records, stats, loading, error, offlineMode };
 };

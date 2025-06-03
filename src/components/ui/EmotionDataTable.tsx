@@ -28,15 +28,22 @@ import OpacityOutlinedIcon from '@mui/icons-material/OpacityOutlined';
 import PercentOutlinedIcon from '@mui/icons-material/PercentOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import WifiOffIcon from '@mui/icons-material/WifiOff';
 import type { EmotionRecord } from '../../types/emotion-data';
 import { format, parseISO } from 'date-fns';
 import ScrollableContainer from './ScrollableContainer';
+import OfflineAlert from './OfflineAlert';
+import { useOnlineStatus } from '../../hooks/useOnlineStatus';
 
 interface EmotionDataTableProps {
   records: EmotionRecord[];
+  offlineMode?: boolean;
 }
 
-const EmotionDataTable: React.FC<EmotionDataTableProps> = ({ records }) => {
+const EmotionDataTable: React.FC<EmotionDataTableProps> = ({ 
+  records, 
+  offlineMode = false 
+}) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [page, setPage] = React.useState(0);
@@ -44,6 +51,7 @@ const EmotionDataTable: React.FC<EmotionDataTableProps> = ({ records }) => {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [filterEmotion, setFilterEmotion] = React.useState<string>('');
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
+  const { isOnline } = useOnlineStatus();
 
   // Filtrar registros
   const filteredRecords = records.filter(record => {
@@ -243,6 +251,9 @@ const EmotionDataTable: React.FC<EmotionDataTableProps> = ({ records }) => {
       }}
       elevation={0}
     >
+      {/* Mostrar alerta de offline si es necesario */}
+      {!isOnline && <OfflineAlert />}
+      
       {/* Título y controles de filtrado */}
       <Box
         sx={{
@@ -255,8 +266,19 @@ const EmotionDataTable: React.FC<EmotionDataTableProps> = ({ records }) => {
           borderBottom: `1px solid ${theme.palette.divider}`,
         }}
       >
-        <Typography variant="h6" fontWeight={600}>
-          Registros de Emociones
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="h6" fontWeight={600}>
+            Registros de Emociones
+          </Typography>
+          {offlineMode && (
+            <Chip
+              icon={<WifiOffIcon fontSize="small" />}
+              label="Datos en caché"
+              size="small"
+              color="warning"
+              variant="outlined"
+            />
+          )}
           <Typography
             component="span"
             variant="body2"
@@ -273,7 +295,7 @@ const EmotionDataTable: React.FC<EmotionDataTableProps> = ({ records }) => {
           >
             {filteredRecords.length} Registros
           </Typography>
-        </Typography>
+        </Box>
 
         <Box
           sx={{

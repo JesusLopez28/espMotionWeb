@@ -16,15 +16,28 @@ import CloudOffIcon from '@mui/icons-material/CloudOff';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import WifiOffIcon from '@mui/icons-material/WifiOff';
+import { useOnlineStatus } from '../../hooks/useOnlineStatus';
 
 const FirebaseDebug: React.FC = () => {
   const theme = useTheme();
+  const { isOnline } = useOnlineStatus();
   const [isChecking, setIsChecking] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [structureResult, setStructureResult] = useState<any>(null);
   const [collectionName] = useState('emotion_data');
 
   const handleCheck = async () => {
+    if (!isOnline) {
+      setResult({
+        success: false,
+        hasDocuments: false,
+        message: 'Sin conexión a Internet',
+        isOffline: true
+      });
+      return;
+    }
+
     setIsChecking(true);
     setResult(null);
 
@@ -38,7 +51,7 @@ const FirebaseDebug: React.FC = () => {
       }
     } catch (error) {
       console.error('Error en diagnóstico:', error);
-      setResult({ success: false, error });
+      setResult({ success: false, error, message: (error as Error).message });
     } finally {
       setIsChecking(false);
     }
@@ -47,7 +60,7 @@ const FirebaseDebug: React.FC = () => {
   // Ejecutar automáticamente al cargar
   useEffect(() => {
     handleCheck();
-  }, []);
+  }, [isOnline]); // Re-ejecutar cuando cambia el estado de conexión
 
   return (
     <Paper
@@ -77,9 +90,9 @@ const FirebaseDebug: React.FC = () => {
         </Box>
 
         <Chip
-          icon={<CloudDoneIcon />}
-          label={collectionName}
-          color="primary"
+          icon={isOnline ? <CloudDoneIcon /> : <WifiOffIcon />}
+          label={isOnline ? collectionName : "Sin conexión"}
+          color={isOnline ? "primary" : "error"}
           variant="outlined"
           size="small"
         />
@@ -90,7 +103,7 @@ const FirebaseDebug: React.FC = () => {
           variant="contained"
           color="primary"
           onClick={handleCheck}
-          disabled={isChecking}
+          disabled={isChecking || !isOnline}
           startIcon={isChecking ? <CircularProgress size={20} color="inherit" /> : <RefreshIcon />}
           sx={{ borderRadius: 2 }}
         >
@@ -107,13 +120,33 @@ const FirebaseDebug: React.FC = () => {
           Verificando conexión con Firebase...
         </Alert>
       )}
+      
+      {!isOnline && (
+        <Alert
+          severity="warning"
+          icon={<WifiOffIcon />}
+          sx={{ mb: 2, borderRadius: 2 }}
+        >
+          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+            Sin conexión a Internet
+          </Typography>
+          <Typography variant="body2">
+            No es posible verificar la conexión con Firebase en modo offline.
+            Los datos guardados localmente seguirán disponibles.
+          </Typography>
+        </Alert>
+      )}
 
       {result && (
         <Box sx={{ mt: 2 }}>
           <Alert
-            severity={result.success ? (result.hasDocuments ? 'success' : 'warning') : 'error'}
+            severity={
+              result.isOffline ? "warning" : 
+              result.success ? (result.hasDocuments ? 'success' : 'warning') : 'error'
+            }
             sx={{ mb: 2, borderRadius: 2 }}
             icon={
+              result.isOffline ? <WifiOffIcon /> :
               result.success ? (
                 result.hasDocuments ? (
                   <CloudDoneIcon />
@@ -126,11 +159,12 @@ const FirebaseDebug: React.FC = () => {
             }
           >
             <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-              {result.success
-                ? result.hasDocuments
-                  ? `Conexión exitosa`
-                  : 'Conexión establecida pero sin documentos'
-                : `Error de conexión: ${result.message}`}
+              {result.isOffline ? "Sin conexión a Internet" :
+                result.success
+                  ? result.hasDocuments
+                    ? `Conexión exitosa`
+                    : 'Conexión establecida pero sin documentos'
+                  : `Error de conexión: ${result.message}`}
             </Typography>
 
             {result.success && result.hasDocuments && (

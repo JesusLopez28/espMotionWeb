@@ -104,11 +104,30 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   </React.StrictMode>
 );
 
-// Registrar el service worker de la PWA (solo en producción)
+// Registrar el service worker con manejo mejorado
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    import('virtual:pwa-register').then(({ registerSW }) => {
-      registerSW();
-    });
+  window.addEventListener('load', async () => {
+    try {
+      const { registerSW } = await import('virtual:pwa-register');
+
+      // Registrar con callback para actualizaciones
+      const updateSW = registerSW({
+        onNeedRefresh() {
+          // Se puede implementar una notificación personalizada aquí
+          if (confirm('Hay una nueva versión disponible. ¿Actualizar ahora?')) {
+            updateSW();
+          }
+        },
+        onOfflineReady() {
+          console.log('La aplicación está lista para uso offline');
+          // Opcional: mostrar una notificación al usuario
+        },
+        immediate: true,
+      });
+
+      console.log('Service Worker registrado correctamente');
+    } catch (error) {
+      console.error('Error al registrar el Service Worker:', error);
+    }
   });
 }

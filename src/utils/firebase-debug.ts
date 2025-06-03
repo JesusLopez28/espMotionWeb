@@ -8,17 +8,40 @@ import { db } from '../config/firebase';
 export const checkFirestoreConnection = async (collectionName = 'emotion_data') => {
   console.log(`🔍 Verificando conexión a colección '${collectionName}'...`);
 
+  // Verificar conexión a Internet primero
+  if (!navigator.onLine) {
+    console.warn('⚠️ El dispositivo está offline');
+    return {
+      success: false,
+      hasDocuments: false,
+      message: 'El dispositivo está offline',
+      isOffline: true
+    };
+  }
+
   try {
     // Lista todas las colecciones (esto requiere permisos especiales)
     const collectionsRef = collection(db, collectionName);
     const q = query(collectionsRef, limit(5));
     const querySnapshot = await getDocs(q);
 
-    console.log(`✅ Conexión exitosa. Documentos encontrados: ${querySnapshot.size}`);
+    // Verificar si los datos vienen de la caché
+    const isFromCache = querySnapshot.metadata.fromCache;
+    
+    if (isFromCache) {
+      console.log('📱 Datos obtenidos desde la caché local');
+    } else {
+      console.log(`✅ Conexión exitosa. Documentos encontrados: ${querySnapshot.size}`);
+    }
 
     if (querySnapshot.empty) {
       console.warn(`⚠️ No se encontraron documentos en la colección '${collectionName}'`);
-      return { success: true, hasDocuments: false, message: 'Sin documentos' };
+      return { 
+        success: true, 
+        hasDocuments: false, 
+        message: 'Sin documentos',
+        isFromCache
+      };
     }
 
     // Mostrar el primer documento como ejemplo
@@ -34,13 +57,22 @@ export const checkFirestoreConnection = async (collectionName = 'emotion_data') 
       hasDocuments: true,
       documentCount: querySnapshot.size,
       documentIds: docIds,
+      isFromCache
     };
   } catch (error) {
     console.error('❌ Error al verificar Firestore:', error);
+    
+    // Determinar si el error es por conexión
+    const isConnectionError = 
+      (error as any).code === 'unavailable' || 
+      (error as any).code === 'failed-precondition' ||
+      !navigator.onLine;
+      
     return {
       success: false,
       error,
       message: (error as Error).message,
+      isConnectionError
     };
   }
 };
@@ -78,9 +110,15 @@ export const checkDocumentStructure = async (collectionName = 'emotion_data') =>
     return {
       valid: allValid,
       documentChecks: validations,
+      isFromCache: querySnapshot.metadata.fromCache
     };
   } catch (error) {
     console.error('Error validando documentos:', error);
-    return { valid: false, error, message: (error as Error).message };
+    return { 
+      valid: false, 
+      error, 
+      message: (error as Error).message,
+      isConnectionError: !navigator.onLine || (error as any).code === 'unavailable'
+    };
   }
 };
