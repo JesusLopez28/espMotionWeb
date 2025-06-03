@@ -1,4 +1,4 @@
-import { collection, getDocs, query, orderBy, limit, Timestamp, getFirestore, getDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, limit, Timestamp, getDoc, doc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import type { EmotionRecord, EmotionStats, Emotion } from '../types/emotion-data';
 
