@@ -1,5 +1,5 @@
 import React from 'react';
-import { Paper, Typography, Box, useTheme } from '@mui/material';
+import { Paper, Typography, Box, useTheme, useMediaQuery } from '@mui/material';
 
 interface StatCardProps {
   title: string;
@@ -19,11 +19,12 @@ const StatCard: React.FC<StatCardProps> = ({
   animation
 }) => {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   
   return (
     <Paper
       sx={{
-        p: 3,
+        p: isMobile ? 2 : 3,
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
@@ -45,8 +46,8 @@ const StatCard: React.FC<StatCardProps> = ({
           position: 'absolute',
           top: 0,
           right: 0,
-          width: '120px',
-          height: '120px',
+          width: isMobile ? '80px' : '120px',
+          height: isMobile ? '80px' : '120px',
           borderRadius: '50%',
           backgroundColor: color,
           opacity: 0.05,
@@ -59,8 +60,8 @@ const StatCard: React.FC<StatCardProps> = ({
           position: 'absolute',
           bottom: 0,
           left: 0,
-          width: '80px',
-          height: '80px',
+          width: isMobile ? '60px' : '80px',
+          height: isMobile ? '60px' : '80px',
           borderRadius: '50%',
           backgroundColor: color,
           opacity: 0.05,
@@ -68,12 +69,17 @@ const StatCard: React.FC<StatCardProps> = ({
         }}
       />
 
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'flex-start', 
+        mb: isMobile ? 2 : 3 
+      }}>
         <Typography 
           variant="subtitle1" 
           sx={{
             color: theme.palette.text.secondary,
-            fontSize: '0.875rem',
+            fontSize: isMobile ? '0.75rem' : '0.875rem',
             fontWeight: 500,
           }}
         >
@@ -84,8 +90,8 @@ const StatCard: React.FC<StatCardProps> = ({
             color: 'white',
             backgroundColor: color,
             borderRadius: '10px',
-            width: 40,
-            height: 40,
+            width: isMobile ? 32 : 40,
+            height: isMobile ? 32 : 40,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -104,6 +110,7 @@ const StatCard: React.FC<StatCardProps> = ({
           sx={{ 
             fontWeight: 700, 
             mb: 0.5,
+            fontSize: isMobile ? '1.25rem' : '2rem',
             color: theme.palette.text.primary
           }}
         >
@@ -116,7 +123,7 @@ const StatCard: React.FC<StatCardProps> = ({
             component="div"
             sx={{ 
               color: theme.palette.text.secondary,
-              fontSize: '0.75rem'
+              fontSize: isMobile ? '0.7rem' : '0.75rem'
             }}
           >
             {subtitle}

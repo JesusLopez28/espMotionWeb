@@ -181,7 +181,7 @@ const EmotionDistributionChart: React.FC<EmotionDistributionChartProps> = ({ rec
           display: true,
           text: 'Fecha',
           font: {
-            weight: 'bold',
+            weight: 'bold' as const,
           },
           color: theme.palette.text.secondary,
         },
@@ -201,7 +201,7 @@ const EmotionDistributionChart: React.FC<EmotionDistributionChartProps> = ({ rec
           display: true,
           text: 'Número de detecciones',
           font: {
-            weight: 'bold',
+            weight: 'bold' as const,
           },
           color: theme.palette.text.secondary,
         },

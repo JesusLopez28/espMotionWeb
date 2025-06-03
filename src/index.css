@@ -152,6 +152,42 @@ button:focus-visible {
   box-shadow: 0 8px 30px rgba(32, 40, 86, 0.12);
 }
 
+/* Ajustes responsive para móviles */
+@media (max-width: 600px) {
+  .chart-container {
+    padding: 0.75rem;
+    border-radius: 10px;
+  }
+  
+  .chart-container:hover {
+    transform: translateY(-3px);
+  }
+  
+  h1 {
+    font-size: 2em;
+  }
+  
+  button {
+    padding: 0.5em 1em;
+  }
+  
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  /* Ajuste de tamaños de texto responsivos */
+  .text-responsive {
+    font-size: 0.9rem;
+  }
+  
+  /* Más espaciado para elementos touch */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

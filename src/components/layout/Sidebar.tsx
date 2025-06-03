@@ -6,10 +6,10 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Divider,
   Box,
   Typography,
   useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import { Link, useLocation } from 'react-router-dom';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -36,12 +36,24 @@ const pulseAnimation = keyframes`
   100% { transform: scale(1); }
 `;
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  onItemClick?: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
   const theme = useTheme();
   const location = useLocation();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   
   // Función para verificar la ruta activa
   const isActive = (path: string) => location.pathname === path;
+
+  // Función para manejar el clic en elementos del menú en dispositivos móviles
+  const handleItemClick = () => {
+    if (isMobile && onItemClick) {
+      onItemClick();
+    }
+  };
 
   return (
     <Drawer
@@ -49,6 +61,7 @@ const Sidebar: React.FC = () => {
       sx={{
         width: drawerWidth,
         flexShrink: 0,
+        display: { xs: 'block', md: 'block' },
         [`& .MuiDrawer-paper`]: { 
           width: drawerWidth, 
           boxSizing: 'border-box',
@@ -110,6 +123,7 @@ const Sidebar: React.FC = () => {
           <ListItemButton 
             component={Link} 
             to="/"
+            onClick={handleItemClick}
             sx={{
               backgroundColor: isActive('/') ? 'rgba(82, 113, 255, 0.1)' : 'transparent',
               '& .MuiListItemText-primary': {
@@ -135,6 +149,7 @@ const Sidebar: React.FC = () => {
           <ListItemButton 
             component={Link} 
             to="/historical"
+            onClick={handleItemClick}
             sx={{
               backgroundColor: isActive('/historical') ? 'rgba(82, 113, 255, 0.1)' : 'transparent',
               '& .MuiListItemText-primary': {
@@ -160,6 +175,7 @@ const Sidebar: React.FC = () => {
           <ListItemButton 
             component={Link} 
             to="/records"
+            onClick={handleItemClick}
             sx={{
               backgroundColor: isActive('/records') ? 'rgba(82, 113, 255, 0.1)' : 'transparent',
               '& .MuiListItemText-primary': {
@@ -224,6 +240,7 @@ const Sidebar: React.FC = () => {
           <ListItemButton 
             component={Link} 
             to="/analytics"
+            onClick={handleItemClick}
             sx={{
               backgroundColor: isActive('/analytics') ? 'rgba(82, 113, 255, 0.1)' : 'transparent',
               '& .MuiListItemText-primary': {
@@ -249,6 +266,7 @@ const Sidebar: React.FC = () => {
           <ListItemButton 
             component={Link} 
             to="/patterns"
+            onClick={handleItemClick}
             sx={{
               backgroundColor: isActive('/patterns') ? 'rgba(82, 113, 255, 0.1)' : 'transparent',
               '& .MuiListItemText-primary': {
@@ -272,33 +290,35 @@ const Sidebar: React.FC = () => {
           </ListItemButton>
         </List>
         
-        <Box 
-          sx={{ 
-            mt: 'auto', 
-            p: 2, 
-            borderRadius: 2, 
-            backgroundColor: 'rgba(82, 113, 255, 0.05)', 
-            display: 'flex', 
-            alignItems: 'center',
-            transition: 'all 0.3s ease',
-            '&:hover': {
-              backgroundColor: 'rgba(82, 113, 255, 0.1)',
-              transform: 'translateY(-2px)',
-              boxShadow: '0 4px 10px rgba(0, 0, 0, 0.05)',
-            }
-          }}
-        >
-          <FavoriteBorderIcon 
+        {!isMobile && (
+          <Box 
             sx={{ 
-              color: theme.palette.secondary.main, 
-              mr: 1, 
-              animation: `${pulseAnimation} 1.5s infinite ease-in-out` 
-            }} 
-          />
-          <Typography variant="body2" color="text.secondary">
-            Analizando emociones...
-          </Typography>
-        </Box>
+              mt: 'auto', 
+              p: 2, 
+              borderRadius: 2, 
+              backgroundColor: 'rgba(82, 113, 255, 0.05)', 
+              display: 'flex', 
+              alignItems: 'center',
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                backgroundColor: 'rgba(82, 113, 255, 0.1)',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 4px 10px rgba(0, 0, 0, 0.05)',
+              }
+            }}
+          >
+            <FavoriteBorderIcon 
+              sx={{ 
+                color: theme.palette.secondary.main, 
+                mr: 1, 
+                animation: `${pulseAnimation} 1.5s infinite ease-in-out` 
+              }} 
+            />
+            <Typography variant="body2" color="text.secondary">
+              Analizando emociones...
+            </Typography>
+          </Box>
+        )}
       </Box>
     </Drawer>
   );

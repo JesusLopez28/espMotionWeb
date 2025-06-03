@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Box, Typography, CircularProgress, Alert, useTheme, Paper, Chip } from '@mui/material';
+import { Grid, Box, Typography, CircularProgress, Alert, useTheme, Paper, Chip, useMediaQuery } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import OpacityIcon from '@mui/icons-material/Opacity';
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
@@ -14,6 +14,7 @@ import FirebaseDebug from './FirebaseDebug';
 
 const DashboardContent: React.FC = () => {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const { records, stats, loading, error } = useEmotionData({
     realtimeUpdates: true,
     limitCount: 50,
@@ -165,17 +166,31 @@ const DashboardContent: React.FC = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+      <Box sx={{ 
+        mb: 4, 
+        display: 'flex', 
+        flexDirection: { xs: 'column', sm: 'row' },
+        justifyContent: 'space-between', 
+        alignItems: { xs: 'flex-start', sm: 'center' }, 
+        gap: { xs: 1, sm: 2 } 
+      }}>
         <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, background: `linear-gradient(90deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <Typography variant="h4" sx={{ 
+            fontWeight: 700, 
+            mb: 1, 
+            fontSize: { xs: '1.75rem', sm: '2.125rem' },
+            background: `linear-gradient(90deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`, 
+            WebkitBackgroundClip: 'text', 
+            WebkitTextFillColor: 'transparent' 
+          }}>
             Dashboard de Emociones
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            Monitoreo y análisis de estados emocionales en tiempo real
+            Monitoreo y análisis en tiempo real
           </Typography>
         </Box>
         
-        <Box sx={{ display: 'flex', gap: 1 }}>
+        <Box sx={{ display: 'flex', gap: 1, mt: { xs: 1, sm: 0 } }}>
           <Chip 
             label="Tiempo real" 
             color="primary" 
@@ -192,32 +207,33 @@ const DashboardContent: React.FC = () => {
         </Box>
       </Box>
 
-      {/* Card con la emoción predominante */}
+      {/* Card con la emoción predominante - más compacta en móvil */}
       <Paper 
         elevation={0}
         sx={{ 
-          p: 3, 
+          p: { xs: 2, sm: 3 }, 
           mb: 4, 
           borderRadius: 3, 
           display: 'flex', 
           flexDirection: { xs: 'column', md: 'row' },
-          alignItems: 'center',
-          gap: 3,
+          alignItems: { xs: 'flex-start', md: 'center' },
+          gap: { xs: 2, md: 3 },
           background: `linear-gradient(135deg, ${theme.palette.background.paper} 0%, rgba(82, 113, 255, 0.05) 100%)`,
           boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)'
         }}
       >
         <Box 
           sx={{ 
-            width: { xs: 80, md: 100 }, 
-            height: { xs: 80, md: 100 }, 
+            width: { xs: 60, md: 100 }, 
+            height: { xs: 60, md: 100 }, 
             borderRadius: '50%',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: { xs: '3rem', md: '4rem' },
+            fontSize: { xs: '2rem', md: '4rem' },
             background: `linear-gradient(135deg, ${emotionInfo.color}30 0%, ${emotionInfo.color}60 100%)`,
             boxShadow: `0 5px 15px ${emotionInfo.color}40`,
+            alignSelf: { xs: 'center', md: 'flex-start' }
           }}
         >
           {emotionInfo.icon}
@@ -227,10 +243,19 @@ const DashboardContent: React.FC = () => {
           <Typography variant="overline" sx={{ color: 'text.secondary', fontWeight: 600, letterSpacing: 1.5 }}>
             EMOCIÓN PREDOMINANTE
           </Typography>
-          <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, color: emotionInfo.color, textTransform: 'capitalize' }}>
+          <Typography variant="h4" sx={{ 
+            fontWeight: 700, 
+            mb: 1, 
+            color: emotionInfo.color, 
+            textTransform: 'capitalize',
+            fontSize: { xs: '1.5rem', md: '2.125rem' }
+          }}>
             {dominantEmotion?.emotion || 'N/A'}
           </Typography>
-          <Typography variant="body1" sx={{ maxWidth: 600 }}>
+          <Typography variant="body1" sx={{ 
+            maxWidth: 600,
+            fontSize: { xs: '0.875rem', md: '1rem' }
+          }}>
             {emotionInfo.description}. <strong>{emotionInfo.tipText}</strong>
           </Typography>
         </Box>
@@ -240,7 +265,8 @@ const DashboardContent: React.FC = () => {
           gap: 2,
           flexDirection: { xs: 'row', md: 'column' },
           alignItems: { xs: 'center', md: 'flex-end' },
-          alignSelf: { xs: 'center', md: 'flex-start' }
+          alignSelf: { xs: 'center', md: 'flex-start' },
+          mt: { xs: 1, md: 0 }
         }}>
           <Chip 
             label={`${dominantEmotion?.count || 0} ocurrencias`} 
@@ -258,73 +284,75 @@ const DashboardContent: React.FC = () => {
         </Box>
       </Paper>
 
-      <Grid container spacing={3}>
-        {/* Tarjetas de estadísticas */}
-        <Grid item xs={12} sm={6} md={3}>
+      <Grid container spacing={isMobile ? 2 : 3}>
+        {/* Tarjetas de estadísticas - en móvil mostramos 2 por fila */}
+        <Grid item xs={6} sm={6} md={3}>
           <StatCard
             title="BPM Promedio"
             value={avgBpm.toFixed(1)}
             subtitle={`Tendencia: ${bpmTrend}`}
-            icon={<FavoriteIcon />}
+            icon={<FavoriteIcon fontSize={isMobile ? "small" : "medium"} />}
             color="#FF5757"
             animation="pulse 1.5s infinite ease-in-out"
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={6} sm={6} md={3}>
           <StatCard
-            title="Sudoración Promedio"
+            title="Sudoración"
             value={avgSweating.toFixed(3)}
             subtitle="Nivel GSR"
-            icon={<OpacityIcon />}
+            icon={<OpacityIcon fontSize={isMobile ? "small" : "medium"} />}
             color="#5271FF"
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={6} sm={6} md={3}>
           <StatCard
             title="Emoción Principal"
             value={dominantEmotion?.emotion || 'N/A'}
-            subtitle={`${emotionInfo.icon} ${dominantEmotion?.count || 0} registros`}
-            icon={<EmojiEmotionsIcon />}
+            subtitle={`${emotionInfo.icon} ${dominantEmotion?.count || 0}`}
+            icon={<EmojiEmotionsIcon fontSize={isMobile ? "small" : "medium"} />}
             color={emotionInfo.color}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={6} sm={6} md={3}>
           <StatCard
-            title="Confianza Promedio"
+            title="Confianza"
             value={`${(avgConfidence).toFixed(1)}%`}
-            subtitle="Precisión de detección"
-            icon={<PercentIcon />}
+            subtitle="Precisión"
+            icon={<PercentIcon fontSize={isMobile ? "small" : "medium"} />}
             color="#66BB6A"
           />
         </Grid>
 
-        {/* Gráficas */}
-        <Grid item xs={12} md={6} sx={{ '& > div': { height: '100%' } }}>
+        {/* Gráficas - En móvil, apilamos verticalmente */}
+        <Grid item xs={12} md={6} sx={{ '& > div': { height: isMobile ? '300px' : '100%' } }}>
           <Box className="chart-container">
             <EmotionPieChart stats={stats} />
           </Box>
         </Grid>
         
-        <Grid item xs={12} md={6} sx={{ '& > div': { height: '100%' } }}>
+        <Grid item xs={12} md={6} sx={{ '& > div': { height: isMobile ? 'auto' : '100%' } }}>
           <EmotionSummary stats={stats} />
         </Grid>
         
-        <Grid item xs={12} md={6} sx={{ '& > div': { height: '100%' } }}>
+        <Grid item xs={12} md={6} sx={{ '& > div': { height: isMobile ? '300px' : '100%' } }}>
           <Box className="chart-container">
             <MetricsLineChart 
               records={records} 
               metric="bpm" 
-              title="Tendencia de Latidos Cardíacos" 
+              title="Tendencia de Latidos Cardíacos"
+              compactMode={isMobile}
             />
           </Box>
         </Grid>
         
-        <Grid item xs={12} md={6} sx={{ '& > div': { height: '100%' } }}>
+        <Grid item xs={12} md={6} sx={{ '& > div': { height: isMobile ? '300px' : '100%' } }}>
           <Box className="chart-container">
             <MetricsLineChart
               records={records}
               metric="sweating"
               title="Tendencia de Nivel de Sudoración"
+              compactMode={isMobile}
             />
           </Box>
         </Grid>

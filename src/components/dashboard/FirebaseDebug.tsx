@@ -12,7 +12,7 @@ const FirebaseDebug: React.FC = () => {
   const [isChecking, setIsChecking] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [structureResult, setStructureResult] = useState<any>(null);
-  const [collectionName, setCollectionName] = useState('emotion_data');
+  const [collectionName] = useState('emotion_data');
 
   const handleCheck = async () => {
     setIsChecking(true);

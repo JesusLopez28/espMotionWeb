@@ -4,7 +4,6 @@ import {
   query,
   orderBy,
   onSnapshot,
-  where,
   limit,
   Timestamp,
   getDocs,
@@ -69,7 +68,6 @@ export const useEmotionData = ({
 
         // Aplicar filtro por fecha si es necesario
         if (daysBack) {
-          const cutoffDate = subDays(new Date(), daysBack);
           // Para datos del futuro (2025), omitimos el filtro de fecha
           console.log('Filtro de días desactivado para permitir datos futuros');
         }

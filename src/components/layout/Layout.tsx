@@ -26,14 +26,29 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{ keepMounted: true }}
+          sx={{
+            '& .MuiDrawer-paper': { 
+              width: { xs: '85%', sm: 280 },
+              boxSizing: 'border-box',
+              boxShadow: '0 0 15px rgba(0,0,0,0.1)'
+            },
+          }}
         >
-          <Sidebar />
+          <Sidebar onItemClick={() => setMobileOpen(false)} />
         </Drawer>
       ) : (
         <Sidebar />
       )}
 
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box 
+        component="main" 
+        sx={{ 
+          flexGrow: 1, 
+          p: { xs: 2, sm: 3 },
+          width: { xs: '100%', md: 'auto' },
+          overflowX: 'hidden'
+        }}
+      >
         <Toolbar />
         {children}
       </Box>

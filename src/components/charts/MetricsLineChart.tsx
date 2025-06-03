@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Line } from 'react-chartjs-2';
+import { Typography, Box, useTheme } from '@mui/material';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -9,116 +10,169 @@ import {
   Title,
   Tooltip,
   Legend,
-  Filler,
+  TimeScale,
 } from 'chart.js';
-import type { EmotionRecord } from '../../types/emotion-data';
-import { Box, Typography, useTheme, Chip } from '@mui/material';
-import { format, parseISO } from 'date-fns';
+import 'chartjs-adapter-date-fns';
 import { es } from 'date-fns/locale';
+import { format, parseISO, isValid } from 'date-fns';
+import type { EmotionRecord } from '../../types/emotion-data';
 
 ChartJS.register(
-  CategoryScale, 
-  LinearScale, 
-  PointElement, 
-  LineElement, 
-  Title, 
-  Tooltip, 
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
   Legend,
-  Filler
+  TimeScale
 );
 
 interface MetricsLineChartProps {
   records: EmotionRecord[];
-  metric: 'bpm' | 'sweating';
+  metric: 'bpm' | 'sweating' | 'confidence';
   title: string;
+  compactMode?: boolean;
 }
 
-const MetricsLineChart: React.FC<MetricsLineChartProps> = ({ records, metric, title }) => {
+const MetricsLineChart: React.FC<MetricsLineChartProps> = ({ 
+  records, 
+  metric, 
+  title,
+  compactMode = false
+}) => {
   const theme = useTheme();
   
-  const sortedRecords = [...records].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  );
-
-  // Limitar a un máximo de 25 puntos para mejor visualización
-  const maxPoints = 25;
-  const displayRecords = sortedRecords.length > maxPoints 
-    ? sortedRecords.filter((_, i) => i % Math.ceil(sortedRecords.length / maxPoints) === 0)
-    : sortedRecords;
-
-  // Cálculo de estadísticas
-  const values = records.map(record => record[metric]);
-  const average = values.reduce((sum, val) => sum + val, 0) / values.length;
-  const max = Math.max(...values);
-  const min = Math.min(...values);
-  const current = values[0] || 0; // Valor más reciente
-  
-  // Determinar tendencia
-  const recentValues = records.slice(0, Math.min(5, records.length)).map(r => r[metric]);
-  const recentAvg = recentValues.reduce((sum, val) => sum + val, 0) / recentValues.length;
-  const trend = recentAvg > average ? 'up' : recentAvg < average ? 'down' : 'stable';
-  
-  // Color y configuración específica para cada métrica
-  const metricConfig = {
-    bpm: {
-      color: theme.palette.secondary.main,
-      lightColor: `${theme.palette.secondary.main}20`,
-      label: 'Latidos por minuto',
-      icon: '❤️',
-      unit: 'BPM',
-      thresholds: { low: 60, high: 100 },
-    },
-    sweating: {
-      color: theme.palette.primary.main,
-      lightColor: `${theme.palette.primary.main}20`,
-      label: 'Nivel de sudoración',
-      icon: '💧',
-      unit: '',
-      thresholds: { low: 0.1, high: 0.5 },
+  const getMetricColor = () => {
+    switch (metric) {
+      case 'bpm':
+        return {
+          line: theme.palette.secondary.main,
+          background: `${theme.palette.secondary.main}20`,
+        };
+      case 'sweating':
+        return {
+          line: theme.palette.primary.main,
+          background: `${theme.palette.primary.main}20`,
+        };
+      case 'confidence':
+        return {
+          line: theme.palette.success.main,
+          background: `${theme.palette.success.main}20`,
+        };
+      default:
+        return {
+          line: theme.palette.primary.main,
+          background: `${theme.palette.primary.main}20`,
+        };
     }
   };
-  
-  const config = metricConfig[metric];
-  
-  const data = {
-    labels: displayRecords.map(record => format(parseISO(record.date), 'HH:mm:ss dd/MM', { locale: es })),
-    datasets: [
-      {
-        label: config.label,
-        data: displayRecords.map(record => record[metric]),
-        borderColor: config.color,
-        backgroundColor: config.color,
-        borderWidth: 2,
-        pointRadius: 3,
-        pointBackgroundColor: 'white',
-        pointBorderColor: config.color,
-        pointBorderWidth: 1.5,
-        pointHoverRadius: 5,
-        pointHoverBackgroundColor: config.color,
-        pointHoverBorderColor: 'white',
-        pointHoverBorderWidth: 2,
-        tension: 0.3,
-        fill: {
-          target: 'origin',
-          above: config.lightColor,
-        },
-      },
-    ],
+
+  const getMetricLabel = () => {
+    switch (metric) {
+      case 'bpm':
+        return 'Latidos por Minuto';
+      case 'sweating':
+        return 'Nivel de Sudoración';
+      case 'confidence':
+        return 'Nivel de Confianza (%)';
+      default:
+        return 'Valor';
+    }
   };
+
+  const getYAxisConfig = () => {
+    switch (metric) {
+      case 'bpm':
+        return {
+          min: Math.max(0, Math.floor(Math.min(...sortedRecords.map(r => r[metric])) * 0.9)),
+          suggestedMax: Math.ceil(Math.max(...sortedRecords.map(r => r[metric])) * 1.1),
+        };
+      case 'sweating':
+        return {
+          min: 0,
+          suggestedMax: Math.max(...sortedRecords.map(r => r[metric])) * 1.2,
+        };
+      case 'confidence':
+        return {
+          min: 0,
+          max: 100,
+        };
+      default:
+        return {
+          beginAtZero: true,
+        };
+    }
+  };
+
+  // Procesamiento de datos
+  const { chartData, sortedRecords } = useMemo(() => {
+    // Validar y filtrar registros con fechas inválidas
+    const validRecords = records.filter(record => {
+      try {
+        const date = parseISO(record.date);
+        return isValid(date);
+      } catch {
+        console.warn('Registro con fecha inválida:', record);
+        return false;
+      }
+    });
+
+    // Ordenar por fecha
+    const sorted = [...validRecords].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+
+    // Preparar datos para el gráfico
+    const labels = sorted.map(record => new Date(record.date));
+    const data = sorted.map(record => record[metric]);
+    const colors = getMetricColor();
+
+    return {
+      chartData: {
+        labels,
+        datasets: [
+          {
+            label: getMetricLabel(),
+            data,
+            fill: true,
+            backgroundColor: colors.background,
+            borderColor: colors.line,
+            borderWidth: 2,
+            tension: 0.4,
+            pointRadius: compactMode ? 2 : 3,
+            pointBackgroundColor: 'white',
+            pointBorderColor: colors.line,
+            pointBorderWidth: 1.5,
+            pointHoverRadius: 5,
+            cubicInterpolationMode: 'monotone' as const,
+          },
+        ],
+      },
+      sortedRecords: sorted,
+    };
+  }, [records, metric, compactMode]);
 
   const options = {
     responsive: true,
     maintainAspectRatio: false,
-    interaction: {
-      mode: 'index' as const,
-      intersect: false,
-    },
     plugins: {
       legend: {
-        display: false,
+        display: !compactMode,
+        position: 'top' as const,
+        labels: {
+          font: {
+            family: "'Poppins', sans-serif",
+            size: 12,
+          },
+          usePointStyle: true,
+          pointStyle: 'circle',
+          boxWidth: 10,
+          padding: 15,
+        },
       },
       tooltip: {
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
         titleColor: theme.palette.text.primary,
         bodyColor: theme.palette.text.secondary,
         bodyFont: {
@@ -127,144 +181,124 @@ const MetricsLineChart: React.FC<MetricsLineChartProps> = ({ records, metric, ti
         padding: 12,
         cornerRadius: 8,
         boxPadding: 6,
-        displayColors: false,
         borderWidth: 1,
         borderColor: theme.palette.divider,
         callbacks: {
-          title: function(tooltipItems: any[]) {
-            return format(parseISO(sortedRecords[tooltipItems[0].dataIndex].date), 'PPpp', { locale: es });
+          title: (tooltipItems: { label: string }[]) => {
+            // Formatear fecha en español
+            return format(new Date(tooltipItems[0].label), 'PPp', { locale: es });
           },
-          label: function(context: any) {
-            const emotion = sortedRecords[context.dataIndex].emotion;
-            const value = context.raw;
-            const emotionIcons: Record<string, string> = {
-              happy: '😊',
-              sad: '😢',
-              fear: '😨',
-              neutral: '😐',
-              angry: '😠',
-              disgust: '🤢',
-              surprise: '😲',
-            };
-            
-            return [
-              `${config.label}: ${value}${config.unit}`,
-              `Emoción: ${emotionIcons[emotion] || ''} ${emotion.charAt(0).toUpperCase() + emotion.slice(1)}`,
-            ];
-          }
-        }
-      }
+        },
+      },
     },
     scales: {
       x: {
-        grid: {
-          display: false,
-          drawBorder: false,
+        type: 'time' as const,
+        time: {
+          unit: compactMode ? ('day' as const) : ('hour' as const),
+          tooltipFormat: 'PPp',
+          displayFormats: {
+            hour: 'HH:mm',
+            day: 'dd/MM'
+          }
         },
-        ticks: {
-          maxRotation: 45,
-          minRotation: 45,
+        title: {
+          display: !compactMode,
+          text: 'Fecha y hora',
           font: {
-            size: 10,
+            weight: 'bold' as const,
           },
           color: theme.palette.text.secondary,
+        },
+        grid: {
+          display: !compactMode,
+          color: theme.palette.divider,
+        },
+        ticks: {
+          color: theme.palette.text.secondary,
+          maxRotation: 45,
+          minRotation: 0,
+          autoSkip: true,
+          maxTicksLimit: compactMode ? 5 : 10,
+          font: {
+            size: compactMode ? 10 : 12,
+          }
+        },
+        border: {
+          display: false,
         },
       },
       y: {
-        beginAtZero: metric === 'sweating', // Para BPM no empezar en cero
-        grid: {
-          color: theme.palette.divider,
-          drawBorder: false,
-        },
-        ticks: {
+        ...getYAxisConfig(),
+        title: {
+          display: !compactMode,
+          text: getMetricLabel(),
           font: {
-            size: 11,
+            weight: 'bold' as const,
           },
           color: theme.palette.text.secondary,
         },
+        grid: {
+          color: theme.palette.divider,
+        },
+        ticks: {
+          precision: metric === 'sweating' ? 3 : 0,
+          color: theme.palette.text.secondary,
+          font: {
+            size: compactMode ? 10 : 12,
+          },
+          maxTicksLimit: compactMode ? 5 : 8,
+        },
+        border: {
+          display: false,
+        },
+      },
+    },
+    interaction: {
+      mode: 'index' as const,
+      intersect: false,
+    },
+    elements: {
+      line: {
+        borderWidth: compactMode ? 1.5 : 2,
+      },
+      point: {
+        radius: compactMode ? 1 : 3,
+        hoverRadius: compactMode ? 3 : 5,
       },
     },
   };
 
   return (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Box 
-        sx={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: 1,
-          mb: 2 
-        }}
-      >
-        <Typography variant="h6" fontWeight={600} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <span>{config.icon}</span> {title}
-        </Typography>
-        
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <Chip 
-            label={`Actual: ${current.toFixed(metric === 'bpm' ? 1 : 3)}${config.unit}`} 
-            size="small"
-            color="primary"
-            variant="outlined"
-            sx={{ fontWeight: 500 }} 
-          />
-          <Chip 
-            label={`Prom: ${average.toFixed(metric === 'bpm' ? 1 : 3)}${config.unit}`} 
-            size="small" 
-            color="secondary"
-            sx={{ fontWeight: 500 }} 
-          />
-          <Chip 
-            label={
-              trend === 'up' ? '↗️ Subiendo' : 
-              trend === 'down' ? '↘️ Bajando' : 
-              '→ Estable'
-            }
-            size="small"
+    <Box sx={{ height: '100%', width: '100%', p: 1 }}>
+      <Typography variant="h6" sx={{ 
+        fontWeight: 600, 
+        mb: 2,
+        fontSize: compactMode ? '1rem' : '1.25rem',
+        textAlign: compactMode ? 'center' : 'left' 
+      }}>
+        {title}
+      </Typography>
+      
+      <Box sx={{ position: 'relative', height: compactMode ? '250px' : '350px' }}>
+        {sortedRecords.length > 0 ? (
+          <Line data={chartData} options={options} />
+        ) : (
+          <Box 
             sx={{ 
-              fontWeight: 500,
-              bgcolor: 
-                trend === 'up' ? 'rgba(255, 87, 87, 0.1)' : 
-                trend === 'down' ? 'rgba(82, 113, 255, 0.1)' : 
-                'rgba(169, 169, 169, 0.1)',
-              color:
-                trend === 'up' ? theme.palette.secondary.main : 
-                trend === 'down' ? theme.palette.primary.main : 
-                theme.palette.text.secondary,
-            }} 
-          />
-        </Box>
-      </Box>
-      
-      {records.length > 0 ? (
-        <Box sx={{ flex: 1, position: 'relative', minHeight: '300px' }}>
-          <Line options={options} data={data} />
-        </Box>
-      ) : (
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center', 
-          flex: 1, 
-          borderRadius: 2,
-          border: `1px dashed ${theme.palette.divider}`,
-        }}>
-          <Typography variant="body2" color="text.secondary">
-            No hay datos suficientes para generar el gráfico
-          </Typography>
-        </Box>
-      )}
-      
-      {/* Mostrar rangos para la métrica */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
-        <Typography variant="caption" color="text.secondary">
-          Min: {min.toFixed(metric === 'bpm' ? 1 : 3)}
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          Max: {max.toFixed(metric === 'bpm' ? 1 : 3)}
-        </Typography>
+              height: '100%', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              borderRadius: 2,
+              border: `1px dashed ${theme.palette.divider}`,
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              No hay suficientes datos para mostrar la gráfica
+            </Typography>
+          </Box>
+        )}
       </Box>
     </Box>
   );

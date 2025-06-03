@@ -58,9 +58,9 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick, showMenuIcon = false }) =>
             display: 'flex', 
             alignItems: 'center',
             background: `linear-gradient(90deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
-            padding: '8px 16px',
+            padding: { xs: '4px 8px', sm: '6px 12px', md: '8px 16px' },
             borderRadius: '12px',
-            mr: 2,
+            mr: { xs: 1, sm: 2 },
             textDecoration: 'none',
             position: 'relative',
             overflow: 'hidden',
@@ -70,7 +70,7 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick, showMenuIcon = false }) =>
               transform: 'translateY(-2px)',
               boxShadow: '0 6px 12px rgba(0, 0, 0, 0.15)',
               '&::after': {
-                opacity: 1,
+          opacity: 1,
               }
             },
             '&::after': {
@@ -91,7 +91,8 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick, showMenuIcon = false }) =>
         >
           <FavoriteBorderIcon sx={{ 
             color: 'white', 
-            mr: 1, 
+            mr: { xs: 0.5, sm: 1 }, 
+            fontSize: { xs: 20, sm: 24, md: 28 },
             animation: `${pulseAnimation} 1.5s infinite ease-in-out`,
             zIndex: 1
           }} />
@@ -99,7 +100,7 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick, showMenuIcon = false }) =>
             variant="h6" 
             sx={{ 
               fontWeight: 700, 
-              fontSize: '1.2rem',
+              fontSize: { xs: '0.80rem', sm: '1.1rem', md: '1.2rem' }, // más pequeño en xs
               color: 'white',
               textDecoration: 'none',
               letterSpacing: '0.5px',
@@ -107,17 +108,17 @@ const Navbar: React.FC<NavbarProps> = ({ onMenuClick, showMenuIcon = false }) =>
               zIndex: 1,
               position: 'relative',
               '&::after': {
-                content: '""',
-                position: 'absolute',
-                width: '0%',
-                height: '2px',
-                bottom: '-2px',
-                left: '0',
-                backgroundColor: 'white',
-                transition: 'width 0.3s ease',
+          content: '""',
+          position: 'absolute',
+          width: '0%',
+          height: '2px',
+          bottom: '-2px',
+          left: '0',
+          backgroundColor: 'white',
+          transition: 'width 0.3s ease',
               },
               '&:hover::after': {
-                width: '100%',
+          width: '100%',
               }
             }}
           >

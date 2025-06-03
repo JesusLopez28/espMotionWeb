@@ -1,8 +1,15 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Box, Typography, useTheme, useMediaQuery } from '@mui/material';
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  type ChartData,
+  type ChartOptions,
+} from 'chart.js';
 import type { EmotionStats } from '../../types/emotion-data';
-import { Box, Typography, useTheme } from '@mui/material';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -12,86 +19,71 @@ interface EmotionPieChartProps {
 
 const EmotionPieChart: React.FC<EmotionPieChartProps> = ({ stats }) => {
   const theme = useTheme();
-  
-  // Mapa de emociones a colores y etiquetas
-  const emotionMap = {
-    happy: { color: 'rgba(255, 215, 0, 0.8)', label: 'Feliz', icon: '😊' },
-    sad: { color: 'rgba(65, 105, 225, 0.8)', label: 'Triste', icon: '😢' },
-    fear: { color: 'rgba(153, 102, 255, 0.8)', label: 'Miedo', icon: '😨' },
-    neutral: { color: 'rgba(169, 169, 169, 0.8)', label: 'Neutral', icon: '😐' },
-    angry: { color: 'rgba(255, 99, 132, 0.8)', label: 'Enojo', icon: '😠' },
-    disgust: { color: 'rgba(75, 192, 192, 0.8)', label: 'Disgusto', icon: '🤢' },
-    surprise: { color: 'rgba(255, 159, 64, 0.8)', label: 'Sorpresa', icon: '😲' },
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  // Mapear nombres de emociones a nombres en español
+  const emotionLabels: Record<string, string> = {
+    happy: 'Feliz',
+    sad: 'Triste',
+    fear: 'Miedo',
+    neutral: 'Neutral',
+    angry: 'Enojo',
+    disgust: 'Disgusto',
+    surprise: 'Sorpresa',
   };
 
-  // Agrupar emociones con muy pocos registros como "Otros"
-  const total = stats.reduce((sum, stat) => sum + stat.count, 0);
-  const threshold = 0.03; // 3% del total
-  
-  let processedStats = [...stats];
-  
-  // Si hay datos para procesar
-  if (processedStats.length > 0 && total > 0) {
-    const significantStats = processedStats.filter(stat => stat.count / total >= threshold);
-    const minorStats = processedStats.filter(stat => stat.count / total < threshold);
-    
-    // Solo combinar en "Otros" si hay más de 1 emoción pequeña
-    if (minorStats.length > 1) {
-      const otherCount = minorStats.reduce((sum, stat) => sum + stat.count, 0);
-      
-      // Calcular promedios ponderados para las estadísticas combinadas
-      const otherBpm = minorStats.reduce((sum, stat) => sum + stat.avgBpm * stat.count, 0) / otherCount;
-      const otherSweating = minorStats.reduce((sum, stat) => sum + stat.avgSweating * stat.count, 0) / otherCount;
-      const otherConfidence = minorStats.reduce((sum, stat) => sum + stat.avgConfidence * stat.count, 0) / otherCount;
-      
-      processedStats = [
-        ...significantStats,
+  // Mapear emociones a colores
+  const emotionColors: Record<string, string> = {
+    happy: '#FFD700',
+    sad: '#4169E1',
+    fear: '#9370DB',
+    neutral: '#A9A9A9',
+    angry: '#FF6347',
+    disgust: '#20B2AA',
+    surprise: '#FF8C00',
+  };
+
+  // Preparar datos para el gráfico
+  const chartData: ChartData<'pie'> = useMemo(() => {
+    return {
+      labels: stats.map(stat => emotionLabels[stat.emotion] || stat.emotion),
+      datasets: [
         {
-          emotion: 'other' as any,
-          count: otherCount,
-          avgBpm: otherBpm,
-          avgSweating: otherSweating,
-          avgConfidence: otherConfidence
-        }
-      ];
-      
-      // Añadir categoría "Otros" al mapa de emociones
-      (emotionMap as any).other = { color: 'rgba(180, 180, 180, 0.7)', label: 'Otros', icon: '✨' };
-    }
-  }
+          data: stats.map(stat => stat.count),
+          backgroundColor: stats.map(
+            stat => emotionColors[stat.emotion] || '#888888'
+          ),
+          borderColor: stats.map(
+            stat => `${emotionColors[stat.emotion]}90` || '#77777790'
+          ),
+          borderWidth: 1,
+          hoverOffset: 15,
+        },
+      ],
+    };
+  }, [stats]);
 
-  const data = {
-    labels: processedStats.map(stat => `${(emotionMap as any)[stat.emotion]?.icon || ''} ${(emotionMap as any)[stat.emotion]?.label || stat.emotion}`),
-    datasets: [
-      {
-        data: processedStats.map(stat => stat.count),
-        backgroundColor: processedStats.map(stat => (emotionMap as any)[stat.emotion]?.color || 'rgba(180, 180, 180, 0.7)'),
-        borderColor: processedStats.map(stat => (emotionMap as any)[stat.emotion]?.color?.replace('0.8', '1') || 'rgba(180, 180, 180, 1)'),
-        borderWidth: 2,
-        hoverOffset: 15,
-      },
-    ],
-  };
-
-  const options = {
+  // Opciones del gráfico
+  const options: ChartOptions<'pie'> = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'right' as const,
+        position: isMobile ? 'bottom' : 'right',
+        align: 'center',
         labels: {
           font: {
             family: "'Poppins', sans-serif",
-            size: 12,
+            size: isMobile ? 10 : 12,
           },
-          padding: 16,
-          usePointStyle: true,
-          pointStyle: 'circle',
-          boxWidth: 10
+          boxWidth: isMobile ? 12 : 15,
+          padding: isMobile ? 10 : 15,
+          textAlign: 'left',
+          color: theme.palette.text.primary,
         },
       },
       tooltip: {
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
         titleColor: theme.palette.text.primary,
         bodyColor: theme.palette.text.secondary,
         bodyFont: {
@@ -100,73 +92,75 @@ const EmotionPieChart: React.FC<EmotionPieChartProps> = ({ stats }) => {
         padding: 12,
         cornerRadius: 8,
         boxPadding: 6,
-        displayColors: true,
         borderWidth: 1,
         borderColor: theme.palette.divider,
         callbacks: {
-          label: function(context: any) {
-            const value = context.raw;
-            const percent = ((value / total) * 100).toFixed(1);
-            return `${value} registros (${percent}%)`;
+          label: function(tooltipItem) {
+            const dataset = tooltipItem.dataset;
+            const total = dataset.data.reduce((acc: number, data: number) => acc + data, 0);
+            const value = dataset.data[tooltipItem.dataIndex] as number;
+            const percentage = ((value / total) * 100).toFixed(1);
+            return `${tooltipItem.label}: ${value} (${percentage}%)`;
           }
         }
-      }
+      },
     },
+    cutout: '40%',
+    radius: '85%',
+    layout: {
+      padding: {
+        top: isMobile ? 5 : 10,
+        bottom: isMobile ? 5 : 10,
+        left: isMobile ? 5 : 10,
+        right: isMobile ? 5 : 10
+      }
+    }
   };
 
-  // Encontrar la emoción más común
-  const dominantEmotion = stats.length > 0 
-    ? stats.reduce((prev, current) => (prev.count > current.count) ? prev : current) 
-    : null;
-
   return (
-    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Box 
+    <Box sx={{ 
+      height: '100%', 
+      width: '100%', 
+      p: 1, 
+      display: 'flex', 
+      flexDirection: 'column' 
+    }}>
+      <Typography 
+        variant="h6" 
         sx={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center', 
-          mb: 2 
+          fontWeight: 600, 
+          mb: 2,
+          fontSize: isMobile ? '1rem' : '1.25rem',
+          textAlign: isMobile ? 'center' : 'left'
         }}
       >
-        <Typography variant="h6" fontWeight={600}>
-          Distribución de Emociones
-        </Typography>
-        {dominantEmotion && (
-          <Box 
-            sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: 1,
-              backgroundColor: 'rgba(82, 113, 255, 0.1)',
-              borderRadius: '20px',
-              px: 2,
-              py: 0.5,
-            }}
-          >
-            <Typography variant="body2" fontWeight={600} color="primary.main">
-              {(emotionMap as any)[dominantEmotion.emotion]?.icon || ''} 
-              {' '}Predominante: {(emotionMap as any)[dominantEmotion.emotion]?.label || dominantEmotion.emotion}
-            </Typography>
-          </Box>
-        )}
-      </Box>
+        Distribución de Emociones
+      </Typography>
       
       {stats.length > 0 ? (
-        <Box sx={{ flex: 1, position: 'relative', minHeight: '300px' }}>
-          <Pie data={data} options={options} />
+        <Box sx={{ 
+          position: 'relative', 
+          height: '100%', 
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <Pie data={chartData} options={options} />
         </Box>
       ) : (
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'center', 
-          flex: 1, 
-          borderRadius: 2,
-          border: `1px dashed ${theme.palette.divider}`,
-        }}>
+        <Box 
+          sx={{ 
+            height: '100%', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            borderRadius: 2,
+            border: `1px dashed ${theme.palette.divider}`,
+          }}
+        >
           <Typography variant="body2" color="text.secondary">
-            No hay datos suficientes para generar el gráfico
+            No hay datos suficientes para mostrar la distribución
           </Typography>
         </Box>
       )}
