@@ -11,7 +11,6 @@ import {
 import { db } from '../config/firebase';
 import type { EmotionRecord, EmotionStats } from '../types/emotion-data';
 import { calculateEmotionStats } from '../services/emotion-service';
-import { subDays } from 'date-fns';
 
 interface UseEmotionDataProps {
   realtimeUpdates?: boolean;
