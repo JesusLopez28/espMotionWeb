@@ -1,0 +1,16 @@
+{
+    "name": "ESP Motion - Detector de Emociones",
+    "short_name": "ESP Motion",
+    "description": "Plataforma de análisis y seguimiento de emociones en tiempo real",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#f8f9fd",
+    "theme_color": "#5271ff",
+    "icons": [
+        {
+            "src": "/emotion-icon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ]
+}

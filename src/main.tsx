@@ -103,3 +103,12 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </ThemeProvider>
   </React.StrictMode>
 );
+
+// Registrar el service worker de la PWA (solo en producción)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    import('virtual:pwa-register').then(({ registerSW }) => {
+      registerSW();
+    });
+  });
+}
