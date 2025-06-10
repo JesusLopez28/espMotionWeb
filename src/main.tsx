@@ -104,7 +104,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   </React.StrictMode>
 );
 
-// Registrar el service worker con manejo mejorado
+// Registrar el service worker con manejo mejorado y soporte explícito para móviles
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
@@ -113,14 +113,34 @@ if ('serviceWorker' in navigator) {
       // Registrar con callback para actualizaciones
       const updateSW = registerSW({
         onNeedRefresh() {
-          // Se puede implementar una notificación personalizada aquí
           if (confirm('Hay una nueva versión disponible. ¿Actualizar ahora?')) {
             updateSW();
           }
         },
         onOfflineReady() {
           console.log('La aplicación está lista para uso offline');
-          // Opcional: mostrar una notificación al usuario
+          // Mostrar una pequeña notificación al usuario
+          const offlineToast = document.createElement('div');
+          offlineToast.textContent = 'Aplicación lista para uso sin conexión';
+          offlineToast.style.position = 'fixed';
+          offlineToast.style.bottom = '10px';
+          offlineToast.style.left = '50%';
+          offlineToast.style.transform = 'translateX(-50%)';
+          offlineToast.style.backgroundColor = '#5271ff';
+          offlineToast.style.color = 'white';
+          offlineToast.style.padding = '10px 20px';
+          offlineToast.style.borderRadius = '20px';
+          offlineToast.style.zIndex = '9999';
+          offlineToast.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
+          document.body.appendChild(offlineToast);
+          
+          setTimeout(() => {
+            offlineToast.style.opacity = '0';
+            offlineToast.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => {
+              document.body.removeChild(offlineToast);
+            }, 500);
+          }, 3000);
         },
         immediate: true,
       });
