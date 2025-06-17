@@ -76,22 +76,6 @@ const Analytics: React.FC = () => {
         }}
       >
         <Typography variant="h4">Análisis de Emociones</Typography>
-
-        <FormControl sx={{ minWidth: 120 }}>
-          <InputLabel id="time-range-label">Período</InputLabel>
-          <Select
-            labelId="time-range-label"
-            id="time-range"
-            value={timeRange}
-            label="Período"
-            onChange={handleTimeRangeChange}
-          >
-            <MenuItem value="1">1 día</MenuItem>
-            <MenuItem value="7">7 días</MenuItem>
-            <MenuItem value="30">30 días</MenuItem>
-            <MenuItem value="90">90 días</MenuItem>
-          </Select>
-        </FormControl>
       </Box>
 
       <Grid container spacing={3}>

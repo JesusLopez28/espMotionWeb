@@ -54,22 +54,6 @@ const Historical: React.FC = () => {
         <Typography variant="h4" gutterBottom>
           Datos Históricos
         </Typography>
-
-        <FormControl sx={{ minWidth: 120 }}>
-          <InputLabel id="time-range-label">Período</InputLabel>
-          <Select
-            labelId="time-range-label"
-            id="time-range"
-            value={timeRange}
-            label="Período"
-            onChange={handleTimeRangeChange}
-          >
-            <MenuItem value="7">Última semana</MenuItem>
-            <MenuItem value="30">Últimos 30 días</MenuItem>
-            <MenuItem value="90">Últimos 3 meses</MenuItem>
-            <MenuItem value="365">Último año</MenuItem>
-          </Select>
-        </FormControl>
       </Box>
 
       <Grid container spacing={3}>

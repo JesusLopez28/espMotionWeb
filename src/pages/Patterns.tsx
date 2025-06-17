@@ -977,24 +977,6 @@ const Patterns: React.FC = () => {
           >
             Patrones Emocionales
           </Typography>
-
-          <FormControl sx={{ minWidth: { xs: '100%', sm: 120 }, mt: { xs: 0, sm: 0 } }}>
-            <InputLabel id="time-range-label">Período</InputLabel>
-            <Select
-              labelId="time-range-label"
-              id="time-range"
-              value={timeRange}
-              label="Período"
-              onChange={handleTimeRangeChange}
-              fullWidth={isMobile}
-              size={isMobile ? 'small' : 'medium'}
-            >
-              <MenuItem value="7">Última semana</MenuItem>
-              <MenuItem value="30">Últimos 30 días</MenuItem>
-              <MenuItem value="90">Últimos 3 meses</MenuItem>
-              <MenuItem value="365">Último año</MenuItem>
-            </Select>
-          </FormControl>
         </Box>
       </Stack>
 
